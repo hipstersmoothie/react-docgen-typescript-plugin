@@ -2,7 +2,7 @@ import path from "path";
 import * as webpack from "webpack";
 import ts from "typescript";
 import docGen from "react-docgen-typescript";
-import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock.js";
+import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
 
 interface LoaderOptions {
   /**
@@ -47,18 +47,25 @@ interface LoaderOptions {
 
 export type PluginOptions = docGen.ParserOptions & LoaderOptions;
 
+interface Module {
+  userRequest: string;
+  _source: {
+    _value: string;
+  }
+}
+
 function processModule(
   parser: docGen.FileParser,
-  module: any,
+  webpackModule: Module,
   tsProgram: ts.Program,
   loaderOptions: PluginOptions
 ) {
-  if (!module) {
+  if (!webpackModule) {
     return;
   }
 
   const componentDocs = parser.parseWithProgramProvider(
-    module.userRequest,
+    webpackModule.userRequest,
     () => tsProgram
   );
 
@@ -67,18 +74,20 @@ function processModule(
   }
 
   const docs = generateDocgenCodeBlock({
-    filename: module.userRequest,
-    source: module.userRequest,
+    filename: webpackModule.userRequest,
+    source: webpackModule.userRequest,
     componentDocs,
     typePropName: "type",
     docgenCollectionName: "STORYBOOK_REACT_CLASSES",
     setDisplayName: true,
     ...loaderOptions,
-  }).substring(module.userRequest.length);
+  }).substring(webpackModule.userRequest.length);
 
-  let source = module._source._value;
-  source += "\n" + docs + "\n";
-  module._source._value = source;
+  // eslint-disable-next-line no-underscore-dangle
+  let source = webpackModule._source._value;
+  source += `\n${docs}\n`;
+  // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+  webpackModule._source._value = source;
 }
 
 export default class DocgenPlugin {
@@ -90,7 +99,7 @@ export default class DocgenPlugin {
   }
 
   apply(compiler: webpack.Compiler) {
-    const pathRegex = RegExp(`\\${path.sep}src.+\.tsx`);
+    const pathRegex = RegExp(`\\${path.sep}src.+\\.tsx`);
     const {
       tsconfigPath,
       propFilter,
@@ -110,7 +119,7 @@ export default class DocgenPlugin {
 
     compiler.hooks.compilation.tap(this.name, (compilation) => {
       compilation.hooks.seal.tap(this.name, () => {
-        const modulesToProcess: any[] = [];
+        const modulesToProcess: Module[] = [];
 
         compilation.modules.forEach((module) => {
           // Skip ignored / external modules
