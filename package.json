@@ -1,0 +1,42 @@
+{
+  "name": "react-docgen-typescript-plugin",
+  "version": "0.0.0",
+  "description": "A webpack plugin to inject react typescript docgen information.",
+  "license": "MIT",
+  "repository": "git@github.com:hipstersmoothie/create-check.git",
+  "author": "Andrew Lisowski <lisowski54@gmail.com>",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "yarn build --watch",
+    "lint": "eslint src --ext .ts,.js",
+    "release": "auto shipit"
+  },
+  "keywords": [
+    "react",
+    "docgen",
+    "typescript",
+    "webpack",
+    "plugin"
+  ],
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "endent": "^2.0.1",
+    "react-docgen-typescript": "^1.16.6",
+    "react-docgen-typescript-loader": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.12",
+    "@types/webpack": "^4.41.17",
+    "prettier": "^2.0.5",
+    "typescript": "3.8.3"
+  },
+  "lint-staged": {
+    "*.{js,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}
