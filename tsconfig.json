@@ -16,6 +16,7 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "downlevelIteration": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "skipLibCheck": true
   }
 }

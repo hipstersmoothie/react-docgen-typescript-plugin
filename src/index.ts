@@ -1,7 +1,7 @@
 import path from "path";
 import * as webpack from "webpack";
 import ts from "typescript";
-import docGen from "react-docgen-typescript";
+import * as docGen from "react-docgen-typescript";
 import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
 
 interface LoaderOptions {
@@ -117,7 +117,7 @@ export default class DocgenPlugin {
       savePropValueAsString,
     };
 
-    compiler.hooks.compilation.tap(this.name, (compilation) => {
+    compiler.hooks.make.tap(this.name, (compilation) => {
       compilation.hooks.seal.tap(this.name, () => {
         const modulesToProcess: Module[] = [];
 
