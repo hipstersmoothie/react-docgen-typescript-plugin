@@ -4,7 +4,7 @@ import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
 
-interface LoaderOptions {
+interface TypescriptOptions {
   /**
    * Specify the location of the tsconfig.json to use. Can not be used with
    * compilerOptions.
@@ -12,6 +12,9 @@ interface LoaderOptions {
   tsconfigPath?: string;
   /** Specify TypeScript compiler options. Can not be used with tsconfigPath. */
   compilerOptions?: ts.CompilerOptions;
+}
+
+interface LoaderOptions {
   /**
    * Specify the docgen collection name to use. All docgen information will
    * be collected into this global object. Set to null to disable.
@@ -46,7 +49,9 @@ interface LoaderOptions {
   typePropName?: string;
 }
 
-export type PluginOptions = docGen.ParserOptions & LoaderOptions;
+export type PluginOptions = docGen.ParserOptions &
+  LoaderOptions &
+  TypescriptOptions;
 
 interface Module {
   userRequest: string;
@@ -60,7 +65,7 @@ function processModule(
   parser: docGen.FileParser,
   webpackModule: Module,
   tsProgram: ts.Program,
-  loaderOptions: PluginOptions
+  loaderOptions: Required<LoaderOptions>
 ) {
   if (!webpackModule) {
     return;
@@ -79,9 +84,6 @@ function processModule(
     filename: webpackModule.userRequest,
     source: webpackModule.userRequest,
     componentDocs,
-    typePropName: "type",
-    docgenCollectionName: "STORYBOOK_REACT_CLASSES",
-    setDisplayName: true,
     ...loaderOptions,
   }).substring(webpackModule.userRequest.length);
 
@@ -119,9 +121,9 @@ export default class DocgenPlugin {
     const pathRegex = RegExp(`\\${path.sep}src.+\\.tsx`);
     const {
       tsconfigPath,
-      docgenCollectionName,
-      setDisplayName,
-      typePropName,
+      docgenCollectionName = "STORYBOOK_REACT_CLASSES",
+      setDisplayName = true,
+      typePropName = "type",
       compilerOptions: userCompilerOptions,
       ...docgenOptions
     } = this.options;
