@@ -10,7 +10,8 @@ interface LoaderOptions {
    * compilerOptions.
    **/
   tsconfigPath?: string;
-
+  /** Specify TypeScript compiler options. Can not be used with tsconfigPath. */
+  compilerOptions?: ts.CompilerOptions;
   /**
    * Specify the docgen collection name to use. All docgen information will
    * be collected into this global object. Set to null to disable.
@@ -51,9 +52,10 @@ interface Module {
   userRequest: string;
   _source: {
     _value: string;
-  }
+  };
 }
 
+/** Run the docgen parser and inject the result into the output */
 function processModule(
   parser: docGen.FileParser,
   webpackModule: Module,
@@ -90,6 +92,21 @@ function processModule(
   webpackModule._source._value = source;
 }
 
+/** Get the contents of the tsconfig in the system */
+function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
+  const basePath = path.dirname(tsconfigPath);
+  const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
+
+  return ts.parseJsonConfigFileContent(
+    configFile.config,
+    ts.sys,
+    basePath,
+    {},
+    tsconfigPath
+  );
+}
+
+/** Inject typescript docgen information into modules at the end of a build */
 export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
@@ -102,20 +119,26 @@ export default class DocgenPlugin {
     const pathRegex = RegExp(`\\${path.sep}src.+\\.tsx`);
     const {
       tsconfigPath,
-      propFilter,
-      componentNameResolver,
-      shouldExtractLiteralValuesFromEnum,
-      shouldRemoveUndefinedFromOptional,
-      savePropValueAsString,
-      ...loaderOptions
+      docgenCollectionName,
+      setDisplayName,
+      typePropName,
+      compilerOptions: userCompilerOptions,
+      ...docgenOptions
     } = this.options;
-    const docgenOptions = {
-      propFilter,
-      componentNameResolver,
-      shouldExtractLiteralValuesFromEnum,
-      shouldRemoveUndefinedFromOptional,
-      savePropValueAsString,
+    let compilerOptions = {
+      jsx: ts.JsxEmit.React,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.Latest,
     };
+
+    if (userCompilerOptions) {
+      compilerOptions = { ...compilerOptions, ...userCompilerOptions };
+    }
+
+    if (tsconfigPath) {
+      const { options } = getTSConfigFile(tsconfigPath);
+      compilerOptions = { ...compilerOptions, ...options };
+    }
 
     compiler.hooks.make.tap(this.name, (compilation) => {
       compilation.hooks.seal.tap(this.name, () => {
@@ -132,20 +155,21 @@ export default class DocgenPlugin {
           }
         });
 
+        const parser =
+          (tsconfigPath &&
+            docGen.withCustomConfig(tsconfigPath, docgenOptions)) ||
+          docGen.withCompilerOptions(compilerOptions, docgenOptions);
         const tsProgram = ts.createProgram(
           modulesToProcess.map((v) => v.userRequest),
-          {
-            jsx: ts.JsxEmit.React,
-            module: ts.ModuleKind.CommonJS,
-            target: ts.ScriptTarget.Latest,
-          }
+          compilerOptions
         );
-        const parser = tsconfigPath
-          ? docGen.withCustomConfig(tsconfigPath, docgenOptions)
-          : docGen.withDefaultConfig({});
 
         modulesToProcess.forEach((m) =>
-          processModule(parser, m, tsProgram, loaderOptions)
+          processModule(parser, m, tsProgram, {
+            docgenCollectionName,
+            setDisplayName,
+            typePropName,
+          })
         );
       });
     });
