@@ -15,6 +15,9 @@ yarn add -D react-docgen-typescript-plugin
 
 ## Usage
 
+> NOTE: The TypeScript compiler options `allowSyntheticDefaultImports` and `esModuleInterop` will make 
+> `react-docgen-typescript-plugin` a lot harder! Turn them off for faster build times.
+
 ```ts
 const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin");
 
