@@ -1,3 +1,15 @@
+# v0.1.0 (Wed Jun 10 2020)
+
+#### 🚀 Enhancement
+
+- allow for compilerOption, get features in parity with react-docgen-typescript-loader [#1](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/1) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.0.2 (Tue Jun 09 2020)
 
 #### ⚠️ Pushed to `master`
