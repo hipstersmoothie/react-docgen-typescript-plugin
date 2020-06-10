@@ -21,8 +21,10 @@ const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin");
 module.exports = {
   plugins: [
     new ReactDocgenTypescriptPlugin(),
-    // or with options
+    // or with a tsconfig
     new ReactDocgenTypescriptPlugin({ tsconfigPath: "./tsconfig.json" }),
+    // or with options
+    new ReactDocgenTypescriptPlugin({ jsx: ts.JsxEmit.Preserve }),
   ],
 };
 ```
@@ -34,6 +36,7 @@ This plugins support all parser options from [react-docgen-typescript](https://g
 | Option               | Type           | Description                                                                                                                                         | Default                   |
 | -------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | tsconfigPath         | string         | Specify the location of the `tsconfig.json` to use.                                                                                                 | `null`                    |
+| compilerOptions      | object         | Specify compiler options. Cannot be used with `tsconfigPath`                                                                                        | `null`                    |
 | docgenCollectionName | string or null | Specify the docgen collection name to use. All docgen information will be collected into this global object. Set to `null` to disable.              | `STORYBOOK_REACT_CLASSES` |
 | setDisplayName       | boolean        | Set the components' display name. If you want to set display names yourself or are using another plugin to do this, you should disable this option. | `true`                    |
 | typePropName         | string         | Specify the name of the property for docgen info prop type.                                                                                         | `type`                    |
