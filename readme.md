@@ -46,6 +46,18 @@ This plugins support all parser options from [react-docgen-typescript](https://g
 | exclude              | glob[]         | Glob patterns to ignore and not generate docgen information for. (Great for ignoring large icon libraries)                                          | []                        |
 | include              | glob[]         | Glob patterns to generate docgen information for                                                                                                    | ['**/**.tsx']             |
 
+## Debugging
+
+If you want to see how this plugins is including and excluding modules set the `DEBUG` environment variable.
+
+- `DEBUG=docgen:*` - All logs
+- `DEBUG=docgen:include` - Included modules
+- `DEBUG=docgen:exclude` - Excluded modules
+
+```bash
+DEBUG=docgen:* npm run storybook
+```
+
 ## Prior Art
 
 - [sn-client](https://github.com/SenseNet/sn-client/) - Inspired by this custom webpack plugin
