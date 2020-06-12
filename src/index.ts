@@ -3,6 +3,7 @@ import * as webpack from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
+import match from "micromatch";
 
 interface TypescriptOptions {
   /**
@@ -51,10 +52,19 @@ interface LoaderOptions {
 
 export type PluginOptions = docGen.ParserOptions &
   LoaderOptions &
-  TypescriptOptions;
+  TypescriptOptions & {
+    /** Glob patterns to ignore */
+    exclude?: [];
+    /** Glob patterns to include. defaults to ts|tsx */
+    include?: [];
+  };
 
 interface Module {
   userRequest: string;
+  request: string;
+  built?: boolean;
+  rawRequest?: string;
+  external?: boolean;
   _source: {
     _value: string;
   };
@@ -125,6 +135,8 @@ export default class DocgenPlugin {
       setDisplayName = true,
       typePropName = "type",
       compilerOptions: userCompilerOptions,
+      exclude = [],
+      include = ["**/**.tsx"],
       ...docgenOptions
     } = this.options;
     let compilerOptions = {
@@ -142,25 +154,35 @@ export default class DocgenPlugin {
       compilerOptions = { ...compilerOptions, ...options };
     }
 
+    const isExcluded = (filename: string) =>
+      Boolean(filename && exclude.find((i) => match([filename], i).length));
+    const isIncluded = (filename: string) =>
+      Boolean(filename && include.find((i) => match([filename], i).length));
+
+    const parser =
+      (tsconfigPath && docGen.withCustomConfig(tsconfigPath, docgenOptions)) ||
+      docGen.withCompilerOptions(compilerOptions, docgenOptions);
+
     compiler.hooks.make.tap(this.name, (compilation) => {
       compilation.hooks.seal.tap(this.name, () => {
         const modulesToProcess: Module[] = [];
 
-        compilation.modules.forEach((module) => {
+        compilation.modules.forEach((module: Module) => {
           // Skip ignored / external modules
-          if (!module.built || module.external || !module.rawRequest) {
+          if (
+            !module.built ||
+            module.external ||
+            !module.rawRequest ||
+            isExcluded(module.request) ||
+            !isIncluded(module.request) ||
+            !pathRegex.test(module.request)
+          ) {
             return;
           }
 
-          if (pathRegex.test(module.request)) {
-            modulesToProcess.push(module);
-          }
+          modulesToProcess.push(module);
         });
 
-        const parser =
-          (tsconfigPath &&
-            docGen.withCustomConfig(tsconfigPath, docgenOptions)) ||
-          docGen.withCompilerOptions(compilerOptions, docgenOptions);
         const tsProgram = ts.createProgram(
           modulesToProcess.map((v) => v.userRequest),
           compilerOptions
