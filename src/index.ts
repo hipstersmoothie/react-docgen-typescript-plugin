@@ -118,6 +118,10 @@ function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
   );
 }
 
+/** Create a glob matching function. */
+const matchGlob = (globs: string[]) => (filename: string) =>
+  Boolean(filename && globs.find((g) => match([filename], g).length));
+
 /** Inject typescript docgen information into modules at the end of a build */
 export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
@@ -128,7 +132,6 @@ export default class DocgenPlugin {
   }
 
   apply(compiler: webpack.Compiler) {
-    const pathRegex = RegExp(`\\${path.sep}src.+\\.tsx`);
     const {
       tsconfigPath,
       docgenCollectionName = "STORYBOOK_REACT_CLASSES",
@@ -139,6 +142,11 @@ export default class DocgenPlugin {
       include = ["**/**.tsx"],
       ...docgenOptions
     } = this.options;
+    
+    const pathRegex = RegExp(`\\${path.sep}src.+\\.tsx`);
+    const isExcluded = matchGlob(exclude);
+    const isIncluded = matchGlob(include);
+
     let compilerOptions = {
       jsx: ts.JsxEmit.React,
       module: ts.ModuleKind.CommonJS,
@@ -153,11 +161,6 @@ export default class DocgenPlugin {
       const { options } = getTSConfigFile(tsconfigPath);
       compilerOptions = { ...compilerOptions, ...options };
     }
-
-    const isExcluded = (filename: string) =>
-      Boolean(filename && exclude.find((i) => match([filename], i).length));
-    const isIncluded = (filename: string) =>
-      Boolean(filename && include.find((i) => match([filename], i).length));
 
     const parser =
       (tsconfigPath && docGen.withCustomConfig(tsconfigPath, docgenOptions)) ||
