@@ -16,6 +16,7 @@
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/camelcase": 0,
     "complexity": 0,
-    "import/no-unresolved": 0
+    "import/no-unresolved": 0,
+    "import/extensions": 0
   }
 }
