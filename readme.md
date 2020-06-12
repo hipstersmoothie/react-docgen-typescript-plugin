@@ -19,6 +19,7 @@ yarn add -D react-docgen-typescript-plugin
 > `react-docgen-typescript-plugin` a lot harder! Turn them off for faster build times.
 
 ```ts
+const ts = require('typescript');
 const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin");
 
 module.exports = {
@@ -43,8 +44,8 @@ This plugins support all parser options from [react-docgen-typescript](https://g
 | docgenCollectionName | string or null | Specify the docgen collection name to use. All docgen information will be collected into this global object. Set to `null` to disable.              | `STORYBOOK_REACT_CLASSES` |
 | setDisplayName       | boolean        | Set the components' display name. If you want to set display names yourself or are using another plugin to do this, you should disable this option. | `true`                    |
 | typePropName         | string         | Specify the name of the property for docgen info prop type.                                                                                         | `type`                    |
-| exclude              | glob[]         | Glob patterns to ignore and not generate docgen information for. (Great for ignoring large icon libraries)                                          | []                        |
-| include              | glob[]         | Glob patterns to generate docgen information for                                                                                                    | ['**/**.tsx']             |
+| exclude              | glob[]         | Glob patterns to ignore and not generate docgen information for. (Great for ignoring large icon libraries)                                          | `[]`                        |
+| include              | glob[]         | Glob patterns to generate docgen information for                                                                                                    | `['**/**.tsx']`             |
 
 ## Debugging
 
