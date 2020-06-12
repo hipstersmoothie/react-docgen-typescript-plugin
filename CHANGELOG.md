@@ -1,3 +1,19 @@
+# v0.4.0 (Fri Jun 12 2020)
+
+#### 🚀 Enhancement
+
+- only load plugin when typescript is available [#6](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/6) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### 📝 Documentation
+
+- Update readme.md [#5](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/5) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.3.0 (Fri Jun 12 2020)
 
 #### 🚀 Enhancement
