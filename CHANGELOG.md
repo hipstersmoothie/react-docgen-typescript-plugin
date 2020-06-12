@@ -1,3 +1,15 @@
+# v0.3.0 (Fri Jun 12 2020)
+
+#### 🚀 Enhancement
+
+- add debug logs [#4](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/4) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.2.0 (Fri Jun 12 2020)
 
 ### Release Notes
