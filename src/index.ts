@@ -1,9 +1,13 @@
 import path from "path";
+import createDebug from "debug";
 import * as webpack from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
 import match from "micromatch";
+
+const debugExclude = createDebug("docgen:exclude");
+const debugInclude = createDebug("docgen:include");
 
 interface TypescriptOptions {
   /**
@@ -142,8 +146,7 @@ export default class DocgenPlugin {
       include = ["**/**.tsx"],
       ...docgenOptions
     } = this.options;
-    
-    const pathRegex = RegExp(`\\${path.sep}src.+\\.tsx`);
+
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
 
@@ -171,18 +174,32 @@ export default class DocgenPlugin {
         const modulesToProcess: Module[] = [];
 
         compilation.modules.forEach((module: Module) => {
-          // Skip ignored / external modules
-          if (
-            !module.built ||
-            module.external ||
-            !module.rawRequest ||
-            isExcluded(module.request) ||
-            !isIncluded(module.request) ||
-            !pathRegex.test(module.request)
-          ) {
+          if (!module.built) {
+            debugExclude(`Ignoring un-built module: ${module.userRequest}`);
             return;
           }
 
+          if (module.external) {
+            debugExclude(`Ignoring external module: ${module.userRequest}`);
+            return;
+          }
+
+          if (!module.rawRequest) {
+            debugExclude(`Ignoring module without "rawRequest": ${module.userRequest}`);
+            return;
+          }
+
+          if (isExcluded(module.request)) {
+            debugExclude(`Module not matched in "exclude": ${module.userRequest}`);
+            return;
+          }
+
+          if (!isIncluded(module.request)) {
+            debugExclude(`Module not matched in "include": ${module.userRequest}`);
+            return;
+          }
+
+          debugInclude(module.userRequest);
           modulesToProcess.push(module);
         });
 
