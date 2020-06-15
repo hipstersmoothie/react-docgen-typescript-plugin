@@ -1,3 +1,19 @@
+# v0.4.1 (Mon Jun 15 2020)
+
+#### 🐛 Bug Fix
+
+- Handle no options passed in [#8](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/8) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### 📝 Documentation
+
+- Correct import usage [#7](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/7) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.4.0 (Fri Jun 12 2020)
 
 #### 🚀 Enhancement
