@@ -20,7 +20,7 @@ yarn add -D react-docgen-typescript-plugin
 
 ```ts
 const ts = require('typescript');
-const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin");
+const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin").default;
 
 module.exports = {
   plugins: [
