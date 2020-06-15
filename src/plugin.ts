@@ -131,7 +131,7 @@ export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
 
-  constructor(options: PluginOptions) {
+  constructor(options: PluginOptions = {}) {
     this.options = options;
   }
 
