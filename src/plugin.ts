@@ -191,14 +191,14 @@ export default class DocgenPlugin {
             return;
           }
 
-          if (isExcluded(module.request)) {
+          if (isExcluded(module.userRequest)) {
             debugExclude(
               `Module not matched in "exclude": ${module.userRequest}`
             );
             return;
           }
 
-          if (!isIncluded(module.request)) {
+          if (!isIncluded(module.userRequest)) {
             debugExclude(
               `Module not matched in "include": ${module.userRequest}`
             );
