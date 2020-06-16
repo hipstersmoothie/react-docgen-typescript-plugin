@@ -23,11 +23,12 @@ const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin");
 
 module.exports = {
   plugins: [
+    // Will default to loading your root tsconfig.json
     new ReactDocgenTypescriptPlugin(),
-    // or with a tsconfig
-    new ReactDocgenTypescriptPlugin({ tsconfigPath: "./tsconfig.json" }),
-    // or with options
-    new ReactDocgenTypescriptPlugin({ jsx: ts.JsxEmit.Preserve }),
+    // or with a specific tsconfig
+    new ReactDocgenTypescriptPlugin({ tsconfigPath: "./tsconfig.dev.json" }),
+    // or with compiler options
+    new ReactDocgenTypescriptPlugin({ compilerOptions: { jsx: ts.JsxEmit.Preserve } }),
   ],
 };
 ```
