@@ -1,3 +1,15 @@
+# v0.5.0 (Tue Jun 16 2020)
+
+#### 🚀 Enhancement
+
+- default to loading root tsconfig.json when no typescript configuration is provided [#9](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/9) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.4.1 (Mon Jun 15 2020)
 
 #### 🐛 Bug Fix
