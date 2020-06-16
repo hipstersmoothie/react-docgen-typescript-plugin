@@ -110,16 +110,20 @@ function processModule(
 
 /** Get the contents of the tsconfig in the system */
 function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
-  const basePath = path.dirname(tsconfigPath);
-  const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
+  try {
+    const basePath = path.dirname(tsconfigPath);
+    const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
 
-  return ts.parseJsonConfigFileContent(
-    configFile.config,
-    ts.sys,
-    basePath,
-    {},
-    tsconfigPath
-  );
+    return ts.parseJsonConfigFileContent(
+      configFile.config,
+      ts.sys,
+      basePath,
+      {},
+      tsconfigPath
+    );
+  } catch (error) {
+    return {} as ts.ParsedCommandLine;
+  }
 }
 
 /** Create a glob matching function. */
@@ -137,7 +141,7 @@ export default class DocgenPlugin {
 
   apply(compiler: webpack.Compiler) {
     const {
-      tsconfigPath,
+      tsconfigPath = "./tsconfig.json",
       docgenCollectionName = "STORYBOOK_REACT_CLASSES",
       setDisplayName = true,
       typePropName = "type",
@@ -158,16 +162,12 @@ export default class DocgenPlugin {
 
     if (userCompilerOptions) {
       compilerOptions = { ...compilerOptions, ...userCompilerOptions };
-    }
-
-    if (tsconfigPath) {
+    } else {
       const { options } = getTSConfigFile(tsconfigPath);
       compilerOptions = { ...compilerOptions, ...options };
     }
 
-    const parser =
-      (tsconfigPath && docGen.withCustomConfig(tsconfigPath, docgenOptions)) ||
-      docGen.withCompilerOptions(compilerOptions, docgenOptions);
+    const parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
 
     compiler.hooks.make.tap(this.name, (compilation) => {
       compilation.hooks.seal.tap(this.name, () => {
@@ -185,17 +185,23 @@ export default class DocgenPlugin {
           }
 
           if (!module.rawRequest) {
-            debugExclude(`Ignoring module without "rawRequest": ${module.userRequest}`);
+            debugExclude(
+              `Ignoring module without "rawRequest": ${module.userRequest}`
+            );
             return;
           }
 
           if (isExcluded(module.request)) {
-            debugExclude(`Module not matched in "exclude": ${module.userRequest}`);
+            debugExclude(
+              `Module not matched in "exclude": ${module.userRequest}`
+            );
             return;
           }
 
           if (!isIncluded(module.request)) {
-            debugExclude(`Module not matched in "include": ${module.userRequest}`);
+            debugExclude(
+              `Module not matched in "include": ${module.userRequest}`
+            );
             return;
           }
 
