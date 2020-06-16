@@ -1,3 +1,15 @@
+# v0.5.1 (Tue Jun 16 2020)
+
+#### 🐛 Bug Fix
+
+- glob against userRequest instead of request [#10](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/10) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.5.0 (Tue Jun 16 2020)
 
 #### 🚀 Enhancement
