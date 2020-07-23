@@ -1,3 +1,15 @@
+# v0.5.2 (Thu Jul 23 2020)
+
+#### 🐛 Bug Fix
+
+- update react-docgen-typescript [#12](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/12) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.5.1 (Tue Jun 16 2020)
 
 #### 🐛 Bug Fix
