@@ -8,6 +8,7 @@ import match from "micromatch";
 
 const debugExclude = createDebug("docgen:exclude");
 const debugInclude = createDebug("docgen:include");
+const debugDocs = createDebug("docgen:docs");
 
 interface TypescriptOptions {
   /**
@@ -100,6 +101,8 @@ function processModule(
     componentDocs,
     ...loaderOptions,
   }).substring(webpackModule.userRequest.length);
+
+  debugDocs(docs);
 
   // eslint-disable-next-line no-underscore-dangle
   let source = webpackModule._source._value;

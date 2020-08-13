@@ -55,10 +55,14 @@ If you want to see how this plugins is including and excluding modules set the `
 - `DEBUG=docgen:*` - All logs
 - `DEBUG=docgen:include` - Included modules
 - `DEBUG=docgen:exclude` - Excluded modules
+- `DEBUG=docgen:docs` - Generated docs
 
 ```bash
 DEBUG=docgen:* npm run storybook
 ```
+
+> Another great way of debugging your generated docs is to use a `debugger` statement in your component source file.
+> If you turn off source maps you will be able to see the code that this package generates.
 
 ## Prior Art
 
