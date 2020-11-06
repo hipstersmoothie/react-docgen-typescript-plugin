@@ -4,7 +4,7 @@ import * as webpack from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
-import match from "micromatch";
+import { matcher } from "micromatch";
 
 const debugExclude = createDebug("docgen:exclude");
 const debugInclude = createDebug("docgen:include");
@@ -130,8 +130,11 @@ function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
 }
 
 /** Create a glob matching function. */
-const matchGlob = (globs: string[]) => (filename: string) =>
-  Boolean(filename && globs.find((g) => match([filename], g).length));
+const matchGlob = (globs: string[]) => {
+  const matchers = globs.map((g) => matcher(g));
+  return (filename: string) =>
+    Boolean(filename && matchers.find((matcher) => matcher(filename)));
+};
 
 /** Inject typescript docgen information into modules at the end of a build */
 export default class DocgenPlugin {
