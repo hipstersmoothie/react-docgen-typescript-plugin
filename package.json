@@ -37,7 +37,8 @@
     "@types/webpack": "^4.41.17",
     "@typescript-eslint/eslint-plugin": "2.31.0",
     "@typescript-eslint/parser": "2.31.0",
-    "auto": "^9.39.0",
+    "auto": "^10.2.3",
+    "auto-config-hipstersmoothie": "^4.0.0",
     "eslint": "7.0.0",
     "eslint-config-airbnb-base": "14.1.0",
     "eslint-config-prettier": "6.11.0",
@@ -57,5 +58,8 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "auto": {
+    "extends": "hipstersmoothie"
   }
 }
