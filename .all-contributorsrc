@@ -1,0 +1,37 @@
+{
+  "projectName": "react-docgen-typescript-plugin",
+  "projectOwner": "hipstersmoothie",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "hipstersmoothie",
+      "name": "Andrew Lisowski",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1192452?v=4",
+      "profile": "http://hipstersmoothie.com/",
+      "contributions": [
+        "code",
+        "design",
+        "doc",
+        "ideas",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "shilman",
+      "name": "Michael Shilman",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/488689?v=4",
+      "profile": "http://shilman.net/",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
