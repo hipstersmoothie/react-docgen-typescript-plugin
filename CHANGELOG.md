@@ -1,3 +1,15 @@
+# v0.6.1 (Fri Nov 06 2020)
+
+#### 🐛 Bug Fix
+
+- Fix include/exclude typings [#15](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/15) ([@shilman](https://github.com/shilman))
+
+#### Authors: 1
+
+- Michael Shilman ([@shilman](https://github.com/shilman))
+
+---
+
 # v0.6.0 (Thu Aug 13 2020)
 
 #### 🚀 Enhancement
