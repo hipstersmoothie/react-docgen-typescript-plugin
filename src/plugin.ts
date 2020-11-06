@@ -133,7 +133,7 @@ function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
 const matchGlob = (globs: string[]) => {
   const matchers = globs.map((g) => matcher(g));
   return (filename: string) =>
-    Boolean(filename && matchers.find((matcher) => matcher(filename)));
+    Boolean(filename && matchers.find((match) => match(filename)));
 };
 
 /** Inject typescript docgen information into modules at the end of a build */
