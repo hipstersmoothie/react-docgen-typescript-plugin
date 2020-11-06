@@ -59,9 +59,9 @@ export type PluginOptions = docGen.ParserOptions &
   LoaderOptions &
   TypescriptOptions & {
     /** Glob patterns to ignore */
-    exclude?: [];
+    exclude?: string[];
     /** Glob patterns to include. defaults to ts|tsx */
-    include?: [];
+    include?: string[];
   };
 
 interface Module {
