@@ -1,3 +1,15 @@
+# v0.6.2 (Fri Nov 06 2020)
+
+#### 🐛 Bug Fix
+
+- Speed up matching [#16](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/16) ([@shilman](https://github.com/shilman))
+
+#### Authors: 1
+
+- Michael Shilman ([@shilman](https://github.com/shilman))
+
+---
+
 # v0.6.1 (Fri Nov 06 2020)
 
 #### 🐛 Bug Fix
