@@ -7,6 +7,7 @@
     "lib": ["esnext"],
     "outDir": "./dist",
     "rootDir": "./src",
+    "jsx": "react",
     "declaration": true,
     "declarationMap": true,
     "strict": true,

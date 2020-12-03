@@ -4,13 +4,27 @@
     "xo",
     "prettier",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint"
+    "prettier/@typescript-eslint",
+    "plugin:jest/recommended",
+    "plugin:jest/style"
   ],
-  "plugins": ["prettier", "eslint-plugin-jsdoc", "@typescript-eslint"],
+  "plugins": [
+    "prettier",
+    "eslint-plugin-jsdoc",
+    "@typescript-eslint",
+    "jest"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json",
     "sourceType": "module"
+  },
+  "ignorePatterns": [
+    "jest.config.js",
+    "**/__fixtures__"
+  ],
+  "env": {
+    "jest/globals": true
   },
   "rules": {
     "@typescript-eslint/explicit-function-return-type": 0,
