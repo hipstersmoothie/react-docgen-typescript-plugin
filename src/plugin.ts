@@ -146,7 +146,7 @@ export default class DocgenPlugin {
     this.options = options;
   }
 
-  apply(compiler: webpack.Compiler) {
+  apply(compiler: webpack.Compiler): void {
     const {
       tsconfigPath = "./tsconfig.json",
       docgenCollectionName = "STORYBOOK_REACT_CLASSES",
@@ -168,7 +168,10 @@ export default class DocgenPlugin {
     };
 
     if (userCompilerOptions) {
-      compilerOptions = { ...compilerOptions, ...userCompilerOptions };
+      compilerOptions = {
+        ...compilerOptions,
+        ...userCompilerOptions,
+      };
     } else {
       const { options } = getTSConfigFile(tsconfigPath);
       compilerOptions = { ...compilerOptions, ...options };
