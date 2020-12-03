@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { parse, ParserOptions } from "react-docgen-typescript/lib/parser.js";
-import generateDocgenCodeBlock, {
+import {
+  generateDocgenCodeBlock,
   GeneratorOptions,
 } from "../generateDocgenCodeBlock";
 

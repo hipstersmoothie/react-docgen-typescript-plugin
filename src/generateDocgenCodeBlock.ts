@@ -321,9 +321,7 @@ export interface GeneratorOptions {
   typePropName: string;
 }
 
-export default function generateDocgenCodeBlock(
-  options: GeneratorOptions
-): string {
+export function generateDocgenCodeBlock(options: GeneratorOptions): string {
   const sourceFile = ts.createSourceFile(
     options.filename,
     options.source,

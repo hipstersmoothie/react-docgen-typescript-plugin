@@ -3,8 +3,9 @@ import createDebug from "debug";
 import * as webpack from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
-import generateDocgenCodeBlock from "react-docgen-typescript-loader/dist/generateDocgenCodeBlock";
 import { matcher } from "micromatch";
+
+import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
 const debugInclude = createDebug("docgen:include");
