@@ -2,6 +2,15 @@ import path from "path";
 import ts from "typescript";
 import { ComponentDoc, PropItem } from "react-docgen-typescript";
 
+export interface GeneratorOptions {
+  filename: string;
+  source: string;
+  componentDocs: ComponentDoc[];
+  docgenCollectionName: string | null;
+  setDisplayName: boolean;
+  typePropName: string;
+}
+
 /**
  * Inserts a ts-ignore comment above the supplied statement.
  *
@@ -310,15 +319,6 @@ function setComponentDocGen(
       )
     )
   );
-}
-
-export interface GeneratorOptions {
-  filename: string;
-  source: string;
-  componentDocs: ComponentDoc[];
-  docgenCollectionName: string | null;
-  setDisplayName: boolean;
-  typePropName: string;
 }
 
 export function generateDocgenCodeBlock(options: GeneratorOptions): string {
