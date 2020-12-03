@@ -1,3 +1,20 @@
+# v0.6.3 (Thu Dec 03 2020)
+
+#### 🐛 Bug Fix
+
+- update deps [#20](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/20) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+- copy generateDocgenCodeBlock from loader to remove dependency on archived code [#19](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/19) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### 🏠 Internal
+
+- add some auto plugins + add contributors [#17](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/17) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.6.2 (Fri Nov 06 2020)
 
 #### 🐛 Bug Fix
