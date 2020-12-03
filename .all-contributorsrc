@@ -20,7 +20,9 @@
         "design",
         "doc",
         "ideas",
-        "maintenance"
+        "maintenance",
+        "infra",
+        "test"
       ]
     },
     {
