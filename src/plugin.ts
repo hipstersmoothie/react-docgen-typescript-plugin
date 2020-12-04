@@ -1,15 +1,24 @@
+/* eslint-disable no-param-reassign, no-underscore-dangle */
+
 import path from "path";
 import createDebug from "debug";
 import * as webpack from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
+import findCacheDir from "find-cache-dir";
+import flatCache from "flat-cache";
+import crypto from "crypto";
 
 import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
 const debugInclude = createDebug("docgen:include");
 const debugDocs = createDebug("docgen:docs");
+
+const cacheId = "ts-docgen";
+const cacheDir = findCacheDir({ name: cacheId });
+const cache = flatCache.load(cacheId, cacheDir);
 
 interface TypescriptOptions {
   /**
@@ -87,6 +96,18 @@ function processModule(
     return;
   }
 
+  const hash = crypto
+    .createHash("sha1")
+    .update(webpackModule._source._value)
+    .digest("hex");
+  const cached = cache.getKey(hash);
+
+  if (cached) {
+    debugInclude(`Got cached docgen for "${webpackModule.request}"`);
+    webpackModule._source._value = cached;
+    return;
+  }
+
   const componentDocs = parser.parseWithProgramProvider(
     webpackModule.userRequest,
     () => tsProgram
@@ -105,11 +126,11 @@ function processModule(
 
   debugDocs(docs);
 
-  // eslint-disable-next-line no-underscore-dangle
-  let source = webpackModule._source._value;
-  source += `\n${docs}\n`;
-  // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-  webpackModule._source._value = source;
+  let sourceWithDocs = webpackModule._source._value;
+  sourceWithDocs += `\n${docs}\n`;
+  webpackModule._source._value = sourceWithDocs;
+
+  cache.setKey(hash, sourceWithDocs);
 }
 
 /** Get the contents of the tsconfig in the system */
@@ -231,6 +252,8 @@ export default class DocgenPlugin {
             typePropName,
           })
         );
+
+        cache.save();
       });
     });
   }
