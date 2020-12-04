@@ -1,3 +1,15 @@
+# v0.7.0 (Fri Dec 04 2020)
+
+#### 🚀 Enhancement
+
+- cache docgen results in between builds for faster startup times [#23](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/23) ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 1
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+---
+
 # v0.6.3 (Thu Dec 03 2020)
 
 #### 🐛 Bug Fix
