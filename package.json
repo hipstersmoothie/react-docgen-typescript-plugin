@@ -62,7 +62,8 @@
     "webpack": "^5.36.2"
   },
   "peerDependencies": {
-    "typescript": ">= 3.x"
+    "typescript": ">= 3.x",
+    "webpack": ">= 5"
   },
   "lint-staged": {
     "*.{js,css,md}": [
