@@ -162,25 +162,15 @@ const matchGlob = (globs: string[]) => {
 export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
+  private parser;
+  private compilerOptions;
 
   constructor(options: PluginOptions = {}) {
-    this.options = options;
-  }
-
-  apply(compiler: webpack.Compiler): void {
     const {
       tsconfigPath = "./tsconfig.json",
-      docgenCollectionName = "STORYBOOK_REACT_CLASSES",
-      setDisplayName = true,
-      typePropName = "type",
       compilerOptions: userCompilerOptions,
-      exclude = [],
-      include = ["**/**.tsx"],
       ...docgenOptions
-    } = this.options;
-
-    const isExcluded = matchGlob(exclude);
-    const isIncluded = matchGlob(include);
+    } = options;
 
     let compilerOptions = {
       jsx: ts.JsxEmit.React,
@@ -194,11 +184,31 @@ export default class DocgenPlugin {
         ...userCompilerOptions,
       };
     } else {
-      const { options } = getTSConfigFile(tsconfigPath);
-      compilerOptions = { ...compilerOptions, ...options };
+      const { options: tsOptions } = getTSConfigFile(tsconfigPath);
+      compilerOptions = { ...compilerOptions, ...tsOptions };
     }
 
-    const parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
+    this.options = options;
+    this.compilerOptions = compilerOptions;
+    this.parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
+  }
+
+  apply(compiler: webpack.Compiler): void {
+    // TODO: Add new logic here
+  }
+
+  // TODO: Eliminate this one after the new apply works
+  oldApply(compiler: webpack.Compiler): void {
+    const {
+      docgenCollectionName = "STORYBOOK_REACT_CLASSES",
+      setDisplayName = true,
+      typePropName = "type",
+      exclude = [],
+      include = ["**/**.tsx"],
+    } = this.options;
+
+    const isExcluded = matchGlob(exclude);
+    const isIncluded = matchGlob(include);
 
     compiler.hooks.make.tap(this.name, (compilation) => {
       compilation.hooks.seal.tap(this.name, () => {
@@ -242,11 +252,11 @@ export default class DocgenPlugin {
 
         const tsProgram = ts.createProgram(
           modulesToProcess.map((v) => v.userRequest),
-          compilerOptions
+          this.compilerOptions
         );
 
         modulesToProcess.forEach((m) =>
-          processModule(parser, m, tsProgram, {
+          processModule(this.parser, m, tsProgram, {
             docgenCollectionName,
             setDisplayName,
             typePropName,
