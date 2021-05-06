@@ -8,21 +8,13 @@
     "plugin:jest/recommended",
     "plugin:jest/style"
   ],
-  "plugins": [
-    "prettier",
-    "eslint-plugin-jsdoc",
-    "@typescript-eslint",
-    "jest"
-  ],
+  "plugins": ["prettier", "eslint-plugin-jsdoc", "@typescript-eslint", "jest"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json",
     "sourceType": "module"
   },
-  "ignorePatterns": [
-    "jest.config.js",
-    "**/__fixtures__"
-  ],
+  "ignorePatterns": ["jest.config.js", "**/__fixtures__"],
   "env": {
     "jest/globals": true
   },

@@ -10,6 +10,7 @@ import findCacheDir from "find-cache-dir";
 import flatCache from "flat-cache";
 import crypto from "crypto";
 
+import DocGenDependency from "./dependency";
 import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
@@ -204,6 +205,28 @@ You don't need that tsProgram in buildModule. That can stay in seal. In buildMod
     /*
 Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates. They add them during parsing, but adding them in buildModule is also fine
 */
+
+    compiler.hooks.thisCompilation.tap(
+      "DocGenPlugin",
+      (compilation, { normalModuleFactory }) => {
+        compilation.dependencyTemplates.set(
+          DocGenDependency,
+          new DocGenDependency.Template()
+        );
+
+        // See ProgressPlugin and SourceMapDevToolModuleOptionsPlugin for reference
+        compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
+          const ident = module.identifier();
+
+          // TODO: Figure out what to do here
+          if (ident) {
+            activeModules.add(ident);
+            lastActiveModule = ident;
+            update();
+          }
+        });
+      }
+    );
   }
 
   // TODO: Eliminate this one after the new apply works
