@@ -195,6 +195,15 @@ export default class DocgenPlugin {
 
   apply(compiler: webpack.Compiler): void {
     // TODO: Add new logic here
+    /*
+Instead of modifying the source code directly: Add a Dependency to the Module via module.addDependency. Register a DependencyTemplate for that Dependency class (compilation.dependencyTemplates.set(...)). In the DependencyTemplate you can add the code block to the source. Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules). Add a Dependency to the Module via module.addDependency. This should happen during building of modules -> compilation.hooks.buildModule. Dependencies are cached with the Module. The result of the DependencyTemplate is cached when the hash is equal.
+*/
+    /*
+You don't need that tsProgram in buildModule. That can stay in seal. In buildModule you only need to add the Dependency. That's will not need the information from typescript before code generation, which happens during seal (seal hook is the start of seal). 
+*/
+    /*
+Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates. They add them during parsing, but adding them in buildModule is also fine
+*/
   }
 
   // TODO: Eliminate this one after the new apply works
