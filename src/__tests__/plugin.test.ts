@@ -16,7 +16,7 @@ function compile(config: Configuration, filenames = ['index.html']) : Promise<Re
 				return reject(err);
 			}
 
-			if (stats.hasErrors()) {
+			if (stats?.hasErrors()) {
 				return reject(stats.toString('errors-only'));
 			}
 
