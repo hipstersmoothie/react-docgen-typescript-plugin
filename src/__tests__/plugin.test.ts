@@ -40,7 +40,7 @@ const getConfig = (
 	config: { title?: string } = {}
 ): Configuration =>
 	({
-		entry: { main: './__tests__/__fixtures__/index.js' },
+		entry: { main: './src/__tests__/__fixtures__/index.js' },
 		plugins: [new ReactDocgenTypeScriptPlugin(options)],
 		...config	
 	})

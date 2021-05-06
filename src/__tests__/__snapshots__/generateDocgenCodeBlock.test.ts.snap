@@ -230,6 +230,8 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
+exports[`component fixture index.js has code block generated 1`] = `""`;
+
 exports[`generates value info for enums 1`] = `
 "import * as React from \\"react\\";
 
