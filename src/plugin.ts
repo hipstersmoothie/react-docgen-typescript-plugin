@@ -229,6 +229,9 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
         // @ts-ignore
         const dependency = new DocGenDependency(module.request);
 
+        // TODO: Add the dependency based on include/exclude. For now,
+        // we apply for everything.
+
         // eslint-disable-next-line
         // @ts-ignore TODO: Figure out why assinging a sub-class doesn't work
         module.addDependency(dependency);
