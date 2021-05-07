@@ -205,11 +205,6 @@ export default class DocgenPlugin {
         const modulesToProcess: Module[] = [];
 
         compilation.modules.forEach((module: Module) => {
-          if (!module.built) {
-            debugExclude(`Ignoring un-built module: ${module.userRequest}`);
-            return;
-          }
-
           if (module.external) {
             debugExclude(`Ignoring external module: ${module.userRequest}`);
             return;
