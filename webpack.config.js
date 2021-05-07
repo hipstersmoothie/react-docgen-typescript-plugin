@@ -1,6 +1,7 @@
 const { ReactDocgenTypeScriptPlugin } = require("./");
 
 module.exports = {
+  mode: "development",
   entry: { main: "./src/__tests__/__fixtures__/Simple.tsx" },
   plugins: [new ReactDocgenTypeScriptPlugin()],
   module: {
