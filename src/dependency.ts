@@ -37,7 +37,7 @@ class DocGenDependency extends ModuleDependency {
   }
 
   get type(): string {
-    return "__react_docgen__";
+    return "react docgen";
   }
 
   get category(): string {
