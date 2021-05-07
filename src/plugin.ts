@@ -206,27 +206,17 @@ You don't need that tsProgram in buildModule. That can stay in seal. In buildMod
 Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates. They add them during parsing, but adding them in buildModule is also fine
 */
 
-    compiler.hooks.thisCompilation.tap(
-      "DocGenPlugin",
-      (compilation, { normalModuleFactory }) => {
-        compilation.dependencyTemplates.set(
-          DocGenDependency,
-          new DocGenDependency.Template()
-        );
+    compiler.hooks.thisCompilation.tap("DocGenPlugin", (compilation) => {
+      compilation.dependencyTemplates.set(
+        DocGenDependency,
+        new DocGenDependency.Template()
+      );
 
-        // See ProgressPlugin and SourceMapDevToolModuleOptionsPlugin for reference
-        compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
-          const ident = module.identifier();
-
-          // TODO: Figure out what to do here
-          if (ident) {
-            activeModules.add(ident);
-            lastActiveModule = ident;
-            update();
-          }
-        });
-      }
-    );
+      compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
+        // TODO: Add a dependency now
+        // module.addDependency(dependency);
+      });
+    });
   }
 
   // TODO: Eliminate this one after the new apply works
