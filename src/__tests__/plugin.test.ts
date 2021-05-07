@@ -59,7 +59,7 @@ const getConfig = (
 test("default options", async () => {
   const result = await compile(getConfig({}));
 
-  console.log("result", result);
+  // console.log("result", result);
 
   // expect(result).toMatchSnapshot();
   expect(true).toEqual(true);

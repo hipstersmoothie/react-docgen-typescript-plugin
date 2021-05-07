@@ -45,7 +45,8 @@ DocGenDependency.Template = class DocGenTemplate extends ModuleDependency.Templa
    * @returns {void}
    */
   apply(dependency, source, templateContext) {
-    // TODO: Write source here - See WorkerDependency.js for reference
+    // TODO: Insert type annotations here
+    source.insert(0, "hello world");
   }
 };
 
