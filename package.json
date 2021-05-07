@@ -36,7 +36,7 @@
     "@types/debug": "^4.1.5",
     "@types/find-cache-dir": "^3.2.0",
     "@types/flat-cache": "^2.0.0",
-    "@types/jest": "^26.0.16",
+    "@types/jest": "^26.0.23",
     "@types/micromatch": "^4.0.1",
     "@types/node": "^14.0.12",
     "@types/react": "^17.0.0",
@@ -57,7 +57,7 @@
     "memfs": "^3.2.2",
     "prettier": "^2.0.5",
     "react": "^17.0.1",
-    "ts-jest": "^26.4.4",
+    "ts-jest": "^26.5.6",
     "ts-loader": "^9.1.2",
     "typescript": "3.8.3",
     "webpack": "^5.36.2"
