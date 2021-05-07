@@ -159,6 +159,8 @@ const matchGlob = (globs: string[]) => {
     Boolean(filename && matchers.find((match) => match(filename)));
 };
 
+console.log("hello from plugin");
+
 /** Inject typescript docgen information into modules at the end of a build */
 export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
@@ -206,13 +208,19 @@ You don't need that tsProgram in buildModule. That can stay in seal. In buildMod
 Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates. They add them during parsing, but adding them in buildModule is also fine
 */
 
+    console.log("applying plugin");
+
     compiler.hooks.thisCompilation.tap("DocGenPlugin", (compilation) => {
+      console.log("at this compilation");
+
       compilation.dependencyTemplates.set(
         DocGenDependency,
         new DocGenDependency.Template()
       );
 
       compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
+        console.log("at build module");
+
         const dependency = new DocGenDependency();
         module.addDependency(dependency);
       });
