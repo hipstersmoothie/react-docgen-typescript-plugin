@@ -54,6 +54,8 @@ DocGenDependency.Template = class DocGenTemplate extends ModuleDependency.Templa
    * @returns {void}
    */
   apply(dependency: Dependency, source: ReplaceSource) {
+    console.log("applying template");
+
     // TODO: Insert type annotations here
     source.insert(0, "hello world");
   }
