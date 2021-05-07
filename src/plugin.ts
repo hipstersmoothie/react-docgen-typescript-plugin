@@ -213,8 +213,8 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
       );
 
       compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
-        // TODO: Add a dependency now
-        // module.addDependency(dependency);
+        const dependency = new DocGenDependency();
+        module.addDependency(dependency);
       });
     });
   }
