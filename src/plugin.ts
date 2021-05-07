@@ -165,8 +165,8 @@ console.log("hello from plugin");
 export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
-  private parser;
-  private compilerOptions;
+  private parser: docGen.FileParser;
+  private compilerOptions: ts.CompilerOptions;
 
   constructor(options: PluginOptions = {}) {
     const {
@@ -214,6 +214,8 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
       console.log("at this compilation");
 
       compilation.dependencyTemplates.set(
+        // eslint-disable-next-line
+        // @ts-ignore TODO: Figure out why this isn't allowed
         DocGenDependency,
         new DocGenDependency.Template()
       );
@@ -222,6 +224,9 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
         console.log("at build module");
 
         const dependency = new DocGenDependency();
+
+        // eslint-disable-next-line
+        // @ts-ignore TODO: Figure out why assinging a sub-class doesn't work
         module.addDependency(dependency);
       });
     });
@@ -244,6 +249,8 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
       compilation.hooks.seal.tap(this.name, () => {
         const modulesToProcess: Module[] = [];
 
+        // eslint-disable-next-line
+        // @ts-ignore TODO: Module type
         compilation.modules.forEach((module: Module) => {
           if (!module.built) {
             debugExclude(`Ignoring un-built module: ${module.userRequest}`);
