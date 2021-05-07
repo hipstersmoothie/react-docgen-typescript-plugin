@@ -3,6 +3,8 @@
 import path from "path";
 import createDebug from "debug";
 import * as webpack from "webpack";
+import DependencyTemplate from "webpack/lib/DependencyTemplate";
+import NullDependency from "webpacl/lib/dependencies/NullDependency";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
@@ -85,11 +87,24 @@ interface Module {
   };
 }
 
+class TempDependency extends NullDependency {
+  constructor(module, docs) {
+    super()
+    this.module = module;
+    this.docs = docs;
+  }
+}
+
+TempDependency.Template = class Template extends DependencyTemplate {
+  apply(dependency, source, templateContext)
+    source.replace()
+  }
+}
+
 /** Run the docgen parser and inject the result into the output */
 function processModule(
   parser: docGen.FileParser,
   webpackModule: Module,
-  tsProgram: ts.Program,
   loaderOptions: Required<LoaderOptions>
 ) {
   if (!webpackModule) {
@@ -108,10 +123,7 @@ function processModule(
     return;
   }
 
-  const componentDocs = parser.parseWithProgramProvider(
-    webpackModule.userRequest,
-    () => tsProgram
-  );
+  const componentDocs = parser.parse(webpackModule.userRequest);
 
   if (!componentDocs.length) {
     return;
@@ -126,9 +138,7 @@ function processModule(
 
   debugDocs(docs);
 
-  let sourceWithDocs = webpackModule._source._value;
-  sourceWithDocs += `\n${docs}\n`;
-  webpackModule._source._value = sourceWithDocs;
+  webpackModule.addDependency(new TempDependency(module, docs))
 
   cache.setKey(hash, sourceWithDocs);
 }
@@ -199,54 +209,43 @@ export default class DocgenPlugin {
     }
 
     const parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
+    
+    compiler.hooks.compilation.tap(this.name, compilation => {
+      compilation.dependencyTemplates.set(TempDependency, new TempDependency.Template());
+      
+      compilation.hooks.buildModule.tap(this.name, module => {
+        if (module.external) {
+          debugExclude(`Ignoring external module: ${module.userRequest}`);
+          return;
+        }
 
-    compiler.hooks.make.tap(this.name, (compilation) => {
-      compilation.hooks.seal.tap(this.name, () => {
-        const modulesToProcess: Module[] = [];
+        if (!module.rawRequest) {
+          debugExclude(
+            `Ignoring module without "rawRequest": ${module.userRequest}`
+          );
+          return;
+        }
 
-        compilation.modules.forEach((module: Module) => {
-          if (module.external) {
-            debugExclude(`Ignoring external module: ${module.userRequest}`);
-            return;
-          }
+        if (isExcluded(module.userRequest)) {
+          debugExclude(
+            `Module not matched in "exclude": ${module.userRequest}`
+          );
+          return;
+        }
 
-          if (!module.rawRequest) {
-            debugExclude(
-              `Ignoring module without "rawRequest": ${module.userRequest}`
-            );
-            return;
-          }
+        if (!isIncluded(module.userRequest)) {
+          debugExclude(
+            `Module not matched in "include": ${module.userRequest}`
+          );
+          return;
+        }
 
-          if (isExcluded(module.userRequest)) {
-            debugExclude(
-              `Module not matched in "exclude": ${module.userRequest}`
-            );
-            return;
-          }
-
-          if (!isIncluded(module.userRequest)) {
-            debugExclude(
-              `Module not matched in "include": ${module.userRequest}`
-            );
-            return;
-          }
-
-          debugInclude(module.userRequest);
-          modulesToProcess.push(module);
-        });
-
-        const tsProgram = ts.createProgram(
-          modulesToProcess.map((v) => v.userRequest),
-          compilerOptions
-        );
-
-        modulesToProcess.forEach((m) =>
-          processModule(parser, m, tsProgram, {
-            docgenCollectionName,
-            setDisplayName,
-            typePropName,
-          })
-        );
+        debugInclude(module.userRequest);
+        processModule(parser, module, {
+          docgenCollectionName,
+          setDisplayName,
+          typePropName,
+        })
 
         cache.save();
       });
