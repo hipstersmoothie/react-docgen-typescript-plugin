@@ -221,9 +221,13 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
       );
 
       compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
-        console.log("at build module");
+        // eslint-disable-next-line
+        // @ts-ignore
+        console.log("at build module", module.request);
 
-        const dependency = new DocGenDependency();
+        // eslint-disable-next-line
+        // @ts-ignore
+        const dependency = new DocGenDependency(module.request);
 
         // eslint-disable-next-line
         // @ts-ignore TODO: Figure out why assinging a sub-class doesn't work
