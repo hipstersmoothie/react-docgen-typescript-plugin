@@ -58,6 +58,7 @@
     "prettier": "^2.0.5",
     "react": "^17.0.1",
     "ts-jest": "^26.4.4",
+    "ts-loader": "^9.1.2",
     "typescript": "3.8.3",
     "webpack": "^5.36.2"
   },

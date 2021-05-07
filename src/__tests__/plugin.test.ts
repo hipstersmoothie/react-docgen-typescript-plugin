@@ -35,12 +35,24 @@ function compile(config: Configuration): Promise<string> {
   });
 }
 
+// TODO: Maybe it's easier for testing to expose a way to write types to the fs
 const getConfig = (
   options = {},
   config: { title?: string } = {}
 ): Configuration => ({
-  entry: { main: "./src/__tests__/__fixtures__/index.js" },
+  entry: { main: "./src/__tests__/__fixtures__/Simple.tsx" },
   plugins: [new ReactDocgenTypeScriptPlugin(options)],
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        options: {
+          transpileOnly: true,
+        },
+      },
+    ],
+  },
   ...config,
 });
 
