@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 
 import { ReplaceSource } from "webpack-sources";
+import * as docGen from "react-docgen-typescript";
 
 // eslint-disable-next-line
 // @ts-ignore: What's the right way to refer to this one?
@@ -50,13 +51,15 @@ class DocGenDependency extends ModuleDependency {
 makeSerializable(DocGenDependency, "src/dependency");
 
 class DocGenTemplate extends ModuleDependency.Template {
-  /**
-   * @param {Dependency} dependency the dependency for which the template should be applied
-   * @param {ReplaceSource} source the current replace source which can be modified
-   * @param {DependencyTemplateContext} templateContext the context object
-   * @returns {void}
-   */
-  apply(dependency: Dependency, source: ReplaceSource) {
+  private parser: docGen.FileParser;
+
+  constructor(parser: docGen.FileParser) {
+    super();
+
+    this.parser = parser;
+  }
+
+  apply(dependency: Dependency, source: ReplaceSource): void {
     console.log("APPLYING template");
 
     // TODO: Insert type annotations here
