@@ -2,7 +2,6 @@
 
 import { ReplaceSource } from "webpack-sources";
 import * as docGen from "react-docgen-typescript";
-import ts from "typescript";
 
 // eslint-disable-next-line
 // @ts-ignore: What's the right way to refer to this one?
@@ -22,17 +21,6 @@ import { LoaderOptions } from "./types";
 class DocGenDependency extends ModuleDependency {
   public static Template: ModuleDependency.Template;
 
-  /**
-   * @param {string} request request
-   */
-  /* constructor(request: string) {
-    super(request);
-  } */
-
-  updateHash(): void {
-    // TODO: See ConstDependency for reference
-  }
-
   getReferencedExports(): [] {
     return Dependency.NO_EXPORTS_REFERENCED;
   }
@@ -44,8 +32,6 @@ class DocGenDependency extends ModuleDependency {
   get category(): string {
     return "docs";
   }
-
-  // TODO: updateHash, serialize, deserialize
 }
 
 makeSerializable(DocGenDependency, "src/dependency");
