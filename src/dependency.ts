@@ -72,13 +72,15 @@ class DocGenTemplate extends ModuleDependency.Template {
     console.log("user request", userRequest);
 
     const tsProgram = ts.createProgram(
-      userRequest,
+      [userRequest],
       this.options.compilerOptions
     );
     const componentDocs = this.options.parser.parseWithProgramProvider(
       userRequest,
       () => tsProgram
     );
+
+    console.log("component docs", componentDocs);
 
     if (!componentDocs.length) {
       return;
