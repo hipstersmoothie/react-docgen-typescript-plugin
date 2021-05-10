@@ -62,6 +62,7 @@ export default class DocgenPlugin {
   private options: PluginOptions;
   private parser: docGen.FileParser;
   private compilerOptions: ts.CompilerOptions;
+  private docgenOptions: LoaderOptions;
 
   constructor(options: PluginOptions = {}) {
     const {
@@ -88,6 +89,7 @@ export default class DocgenPlugin {
 
     this.options = options;
     this.compilerOptions = compilerOptions;
+    this.docgenOptions = docgenOptions;
     this.parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
   }
 
@@ -108,9 +110,7 @@ export default class DocgenPlugin {
           new DocGenDependency.Template({
             parser: this.parser,
             compilerOptions: this.compilerOptions,
-            docgenCollectionName: this.options.docgenCollectionName,
-            setDisplayName: this.options.setDisplayName,
-            typePropName: this.options.typePropName,
+            docgenOptions: this.docgenOptions,
           })
         );
 

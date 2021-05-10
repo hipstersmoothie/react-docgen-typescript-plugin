@@ -53,7 +53,8 @@ makeSerializable(DocGenDependency, "src/dependency");
 type Options = {
   parser: docGen.FileParser;
   compilerOptions: ts.CompilerOptions;
-} & LoaderOptions;
+  docgenOptions: LoaderOptions;
+};
 
 class DocGenTemplate extends ModuleDependency.Template {
   private options: Options;
@@ -94,9 +95,10 @@ class DocGenTemplate extends ModuleDependency.Template {
       source: userRequest,
       componentDocs,
       docgenCollectionName:
-        this.options.docgenCollectionName || "STORYBOOK_REACT_CLASSES",
-      setDisplayName: this.options.setDisplayName || true,
-      typePropName: this.options.typePropName || "type",
+        this.options.docgenOptions.docgenCollectionName ||
+        "STORYBOOK_REACT_CLASSES",
+      setDisplayName: this.options.docgenOptions.setDisplayName || true,
+      typePropName: this.options.docgenOptions.typePropName || "type",
     }).substring(userRequest.length);
 
     console.log("DOCGEN block", docgenBlock);
