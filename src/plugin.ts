@@ -212,8 +212,10 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
 
     console.log("applying plugin");
 
+    const pluginName = "DocGenPlugin";
+
     compiler.hooks.compilation.tap(
-      "DocGenPlugin",
+      pluginName,
       (compilation, { normalModuleFactory }) => {
         console.log("at compilation");
 
@@ -252,13 +254,13 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
 
         normalModuleFactory.hooks.parser
           .for("javascript/auto")
-          .tap("ProvidePlugin", handler);
+          .tap(pluginName, handler);
         normalModuleFactory.hooks.parser
           .for("javascript/dynamic")
-          .tap("ProvidePlugin", handler);
+          .tap(pluginName, handler);
         normalModuleFactory.hooks.parser
           .for("javascript/esm")
-          .tap("ProvidePlugin", handler);
+          .tap(pluginName, handler);
 
         /*
       compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
