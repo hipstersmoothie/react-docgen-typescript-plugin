@@ -3,8 +3,6 @@
 import path from "path";
 import createDebug from "debug";
 import * as webpack from "webpack";
-import DependencyTemplate from "webpack/lib/DependencyTemplate";
-import NullDependency from "webpacl/lib/dependencies/NullDependency";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
@@ -12,6 +10,7 @@ import findCacheDir from "find-cache-dir";
 import flatCache from "flat-cache";
 import crypto from "crypto";
 
+import DocgenDependency from "./DocgenDependency"
 import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
@@ -76,71 +75,25 @@ export type PluginOptions = docGen.ParserOptions &
     include?: string[];
   };
 
-interface Module {
-  userRequest: string;
-  request: string;
-  built?: boolean;
-  rawRequest?: string;
-  external?: boolean;
-  _source: {
-    _value: string;
-  };
-}
 
-class TempDependency extends NullDependency {
-  constructor(module, docs) {
-    super()
-    this.module = module;
-    this.docs = docs;
-  }
-}
-
-TempDependency.Template = class Template extends DependencyTemplate {
-  apply(dependency, source, templateContext)
-    source.replace()
-  }
-}
-
-/** Run the docgen parser and inject the result into the output */
-function processModule(
+/** Run the docgen parser and return string */
+function getDocsFromModule(
   parser: docGen.FileParser,
-  webpackModule: Module,
+  webpackUserRequest: webpack.NormalModule['userRequest'],
   loaderOptions: Required<LoaderOptions>
-) {
-  if (!webpackModule) {
-    return;
-  }
-
-  const hash = crypto
-    .createHash("sha1")
-    .update(webpackModule._source._value)
-    .digest("hex");
-  const cached = cache.getKey(hash);
-
-  if (cached) {
-    debugInclude(`Got cached docgen for "${webpackModule.request}"`);
-    webpackModule._source._value = cached;
-    return;
-  }
-
-  const componentDocs = parser.parse(webpackModule.userRequest);
+): string | null {
+  const componentDocs = parser.parse(webpackUserRequest);
 
   if (!componentDocs.length) {
-    return;
+    return null;
   }
 
-  const docs = generateDocgenCodeBlock({
-    filename: webpackModule.userRequest,
-    source: webpackModule.userRequest,
+  return generateDocgenCodeBlock({
+    filename: webpackUserRequest,
+    source: webpackUserRequest,
     componentDocs,
     ...loaderOptions,
-  }).substring(webpackModule.userRequest.length);
-
-  debugDocs(docs);
-
-  webpackModule.addDependency(new TempDependency(module, docs))
-
-  cache.setKey(hash, sourceWithDocs);
+  }).substring(webpackUserRequest.length);
 }
 
 /** Get the contents of the tsconfig in the system */
@@ -169,7 +122,7 @@ const matchGlob = (globs: string[]) => {
 };
 
 /** Inject typescript docgen information into modules at the end of a build */
-export default class DocgenPlugin {
+export default class DocgenPlugin implements webpack.WebpackPluginInstance  {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
 
@@ -210,45 +163,66 @@ export default class DocgenPlugin {
 
     const parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
     
-    compiler.hooks.compilation.tap(this.name, compilation => {
-      compilation.dependencyTemplates.set(TempDependency, new TempDependency.Template());
+    compiler.hooks.compilation.tap(this.name, (compilation, { normalModuleFactory }) => {
+      compilation.dependencyTemplates.set(DocgenDependency, new DocgenDependency.Template());
       
-      compilation.hooks.buildModule.tap(this.name, module => {
-        if (module.external) {
-          debugExclude(`Ignoring external module: ${module.userRequest}`);
-          return;
-        }
+      const handler = (webpackParser: webpack.javascript.JavascriptParser) => {
+        webpackParser.hooks.program.tap(this.name, () => {
+          const currentModule = webpackParser.state.module;
 
-        if (!module.rawRequest) {
-          debugExclude(
-            `Ignoring module without "rawRequest": ${module.userRequest}`
-          );
-          return;
-        }
+          if (!currentModule.rawRequest) {
+            debugExclude(
+              `Ignoring module without "rawRequest": ${currentModule.rawRequest}`
+            );
+            return;
+          }
 
-        if (isExcluded(module.userRequest)) {
-          debugExclude(
-            `Module not matched in "exclude": ${module.userRequest}`
-          );
-          return;
-        }
+          if (isExcluded(currentModule.userRequest)) {
+            debugExclude(
+              `Module not matched in "exclude": ${currentModule.userRequest}`
+            );
+            return;
+          }
 
-        if (!isIncluded(module.userRequest)) {
-          debugExclude(
-            `Module not matched in "include": ${module.userRequest}`
-          );
-          return;
-        }
+          if (!isIncluded(currentModule.userRequest)) {
+            debugExclude(
+              `Module not matched in "include": ${currentModule.userRequest}`
+            );
+            return;
+          }
 
-        debugInclude(module.userRequest);
-        processModule(parser, module, {
-          docgenCollectionName,
-          setDisplayName,
-          typePropName,
+          debugInclude(currentModule.userRequest);
+
+
+          const docs = getDocsFromModule(parser, currentModule.userRequest, {
+            docgenCollectionName,
+            setDisplayName,
+            typePropName,
+          })
+
+          debugDocs(docs);
+
+          if (docs) {
+            const dependency = new DocgenDependency(docs)
+
+            if (currentModule.addPresentationalDependency) {
+              currentModule.addPresentationalDependency(dependency)
+            } else {
+              currentModule.addDependency(dependency)
+            }
+          }
         })
+      }
 
-        cache.save();
-      });
+      normalModuleFactory.hooks.parser
+        .for("javascript/auto")
+        .tap(this.name, handler);
+      normalModuleFactory.hooks.parser
+        .for("javascript/dynamic")
+        .tap(this.name, handler);
+      normalModuleFactory.hooks.parser
+        .for("javascript/esm")
+        .tap(this.name, handler);
     });
   }
 }
