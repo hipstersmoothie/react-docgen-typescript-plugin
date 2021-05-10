@@ -47,7 +47,6 @@ class DocGenDependency extends ModuleDependency {
   // TODO: updateHash, serialize, deserialize
 }
 
-// TODO
 makeSerializable(DocGenDependency, "src/dependency");
 
 class DocGenTemplate extends ModuleDependency.Template {
@@ -62,7 +61,6 @@ class DocGenTemplate extends ModuleDependency.Template {
 
     // TODO: Insert type annotations here
     source.insert(0, "hello world");
-    // source.replace(0, 10, "hello world");
   }
 }
 

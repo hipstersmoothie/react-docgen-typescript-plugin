@@ -195,26 +195,11 @@ export default class DocgenPlugin {
   }
 
   apply(compiler: webpack.Compiler): void {
-    // TODO: Add new logic here
-    /*
-Instead of modifying the source code directly: Add a Dependency to the Module via module.addDependency. Register a DependencyTemplate for that Dependency class (compilation.dependencyTemplates.set(...)). In the DependencyTemplate you can add the code block to the source. Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules). Add a Dependency to the Module via module.addDependency. This should happen during building of modules -> compilation.hooks.buildModule. Dependencies are cached with the Module. The result of the DependencyTemplate is cached when the hash is equal.
-*/
-    /*
-You don't need that tsProgram in buildModule. That can stay in seal. In buildModule you only need to add the Dependency. That's will not need the information from typescript before code generation, which happens during seal (seal hook is the start of seal). 
-*/
-    /*
-Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates. They add them during parsing, but adding them in buildModule is also fine
-*/
-
-    console.log("applying plugin");
-
     const pluginName = "DocGenPlugin";
 
     compiler.hooks.compilation.tap(
       pluginName,
       (compilation, { normalModuleFactory }) => {
-        console.log("at compilation");
-
         compilation.dependencyTemplates.set(
           // eslint-disable-next-line
           // @ts-ignore TODO: Figure out why this isn't allowed
@@ -230,12 +215,10 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
             // @ts-ignore
             const { module } = parser.state;
 
-            console.log("module", module.rawRequest);
-
-            if (!module.built) {
-              console.log("ignoring built");
-
-              debugExclude(`Ignoring un-built module: ${module.userRequest}`);
+            // Break the recursion. Without this the plugin will get stuck in
+            // an eternal loop as dependencies are added.
+            if (!module.userRequest) {
+              debugExclude(`Ignoring external module: ${module.userRequest}`);
               return;
             }
 
@@ -251,9 +234,7 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
               return;
             }
 
-            console.log("adding dependency");
-
-            // TODO: Re-enable
+            // TODO: Re-enable these two
             /*
             if (isExcluded(module.userRequest)) {
               debugExclude(
@@ -272,9 +253,7 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
 
             // eslint-disable-next-line
             // @ts-ignore
-            const dependency = new DocGenDependency(module.request);
-
-            module.addDependency(dependency);
+            module.addDependency(new DocGenDependency(module.request));
           });
         };
 
