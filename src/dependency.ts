@@ -69,6 +69,8 @@ class DocGenTemplate extends ModuleDependency.Template {
 
     const { userRequest } = dependency;
 
+    console.log("user request", userRequest);
+
     const tsProgram = ts.createProgram(
       userRequest,
       this.options.compilerOptions
@@ -94,6 +96,8 @@ class DocGenTemplate extends ModuleDependency.Template {
       setDisplayName: this.options.setDisplayName || true,
       typePropName: this.options.typePropName || "type",
     }).substring(userRequest.length);
+
+    console.log("DOCGEN block", docgenBlock);
 
     source.insert(userRequest.length, docgenBlock);
   }
