@@ -1,3 +1,4 @@
+// TODO: How to resolve ts parser issue? Better port config to ts?
 const path = require("path");
 const { ReactDocgenTypeScriptPlugin } = require("./");
 
