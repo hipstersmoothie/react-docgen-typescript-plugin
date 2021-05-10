@@ -2,6 +2,7 @@
 
 import { ReplaceSource } from "webpack-sources";
 import * as docGen from "react-docgen-typescript";
+import ts from "typescript";
 
 // eslint-disable-next-line
 // @ts-ignore: What's the right way to refer to this one?
@@ -15,9 +16,8 @@ import makeSerializable from "webpack/lib/util/makeSerializable.js";
 // @ts-ignore TODO: Figure out where to find a typed version
 import Dependency from "webpack/lib/Dependency.js";
 
-// eslint-disable-next-line
-// @ts-ignore TODO: Figure out where to find a typed version
-// import Hash from "webpack/lib/util/Hash.js";
+import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
+import { LoaderOptions } from "./types";
 
 class DocGenDependency extends ModuleDependency {
   public static Template: ModuleDependency.Template;
@@ -50,20 +50,52 @@ class DocGenDependency extends ModuleDependency {
 
 makeSerializable(DocGenDependency, "src/dependency");
 
-class DocGenTemplate extends ModuleDependency.Template {
-  private parser: docGen.FileParser;
+type Options = {
+  parser: docGen.FileParser;
+  compilerOptions: ts.CompilerOptions;
+} & LoaderOptions;
 
-  constructor(parser: docGen.FileParser) {
+class DocGenTemplate extends ModuleDependency.Template {
+  private options: Options;
+
+  constructor(options: Options) {
     super();
 
-    this.parser = parser;
+    this.options = options;
   }
 
   apply(dependency: Dependency, source: ReplaceSource): void {
     console.log("APPLYING template");
 
-    // TODO: Insert type annotations here
-    source.insert(0, "hello world");
+    const { userRequest } = dependency;
+
+    const tsProgram = ts.createProgram(
+      userRequest,
+      this.options.compilerOptions
+    );
+    const componentDocs = this.options.parser.parseWithProgramProvider(
+      userRequest,
+      () => tsProgram
+    );
+
+    if (!componentDocs.length) {
+      return;
+    }
+
+    console.log("GENERATING docgen codeblock");
+
+    // TODO: Instead of substring, should this replace instead?
+    const docgenBlock = generateDocgenCodeBlock({
+      filename: userRequest,
+      source: userRequest,
+      componentDocs,
+      docgenCollectionName:
+        this.options.docgenCollectionName || "STORYBOOK_REACT_CLASSES",
+      setDisplayName: this.options.setDisplayName || true,
+      typePropName: this.options.typePropName || "type",
+    }).substring(userRequest.length);
+
+    source.insert(userRequest.length, docgenBlock);
   }
 }
 

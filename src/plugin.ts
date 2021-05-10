@@ -105,7 +105,13 @@ export default class DocgenPlugin {
           // eslint-disable-next-line
           // @ts-ignore TODO: Figure out why this isn't allowed
           DocGenDependency,
-          new DocGenDependency.Template(this.parser)
+          new DocGenDependency.Template({
+            parser: this.parser,
+            compilerOptions: this.compilerOptions,
+            docgenCollectionName: this.options.docgenCollectionName,
+            setDisplayName: this.options.setDisplayName,
+            typePropName: this.options.typePropName,
+          })
         );
 
         // eslint-disable-next-line
