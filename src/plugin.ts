@@ -10,10 +10,6 @@ import findCacheDir from "find-cache-dir";
 import flatCache from "flat-cache";
 import crypto from "crypto";
 
-// eslint-disable-next-line
-// @ts-ignore TODO: Figure out where to find a typed version
-import ConstDependency from "webpack/lib/dependencies/ConstDependency";
-
 import DocGenDependency from "./dependency";
 import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
@@ -219,17 +215,6 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
       (compilation, { normalModuleFactory }) => {
         console.log("at compilation");
 
-        // TODO: What is ConstDependency? Is it needed?
-        compilation.dependencyTemplates.set(
-          ConstDependency,
-          new ConstDependency.Template()
-        );
-        compilation.dependencyFactories.set(
-          // eslint-disable-next-line
-          // @ts-ignore TODO: Figure out why this isn't allowed
-          DocGenDependency,
-          normalModuleFactory
-        );
         compilation.dependencyTemplates.set(
           // eslint-disable-next-line
           // @ts-ignore TODO: Figure out why this isn't allowed
