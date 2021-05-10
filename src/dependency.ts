@@ -37,16 +37,19 @@ class DocGenDependency extends ModuleDependency {
   }
 
   get type(): string {
-    return "react docgen";
+    return "docgen";
   }
 
   get category(): string {
-    return "docs";
+    return "esm"; // "docs";
   }
+
+  // TODO: updateHash, serialize, deserialize
 }
 
-// eslint-disable-next-line
-DocGenDependency.Template = class DocGenTemplate extends ModuleDependency.Template {
+makeSerializable(DocGenDependency, "src/dependency");
+
+class DocGenTemplate extends ModuleDependency.Template {
   /**
    * @param {Dependency} dependency the dependency for which the template should be applied
    * @param {ReplaceSource} source the current replace source which can be modified
@@ -59,8 +62,8 @@ DocGenDependency.Template = class DocGenTemplate extends ModuleDependency.Templa
     // TODO: Insert type annotations here
     source.insert(0, "hello world");
   }
-};
+}
 
-makeSerializable(DocGenDependency, "src/dependency");
+DocGenDependency.Template = DocGenTemplate;
 
 export default DocGenDependency;

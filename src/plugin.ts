@@ -10,6 +10,10 @@ import findCacheDir from "find-cache-dir";
 import flatCache from "flat-cache";
 import crypto from "crypto";
 
+// eslint-disable-next-line
+// @ts-ignore TODO: Figure out where to find a typed version
+import ConstDependency from "webpack/lib/dependencies/ConstDependency";
+
 import DocGenDependency from "./dependency";
 import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
@@ -159,8 +163,6 @@ const matchGlob = (globs: string[]) => {
     Boolean(filename && matchers.find((match) => match(filename)));
 };
 
-console.log("hello from plugin");
-
 /** Inject typescript docgen information into modules at the end of a build */
 export default class DocgenPlugin {
   private name = "React Docgen Typescript Plugin";
@@ -210,16 +212,55 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
 
     console.log("applying plugin");
 
-    compiler.hooks.thisCompilation.tap("DocGenPlugin", (compilation) => {
-      console.log("at this compilation");
+    compiler.hooks.compilation.tap(
+      "DocGenPlugin",
+      (compilation, { normalModuleFactory }) => {
+        console.log("at compilation");
 
-      compilation.dependencyTemplates.set(
+        // TODO: What is ConstDependency? Is it needed?
+        compilation.dependencyTemplates.set(
+          ConstDependency,
+          new ConstDependency.Template()
+        );
+        compilation.dependencyFactories.set(
+          // eslint-disable-next-line
+          // @ts-ignore TODO: Figure out why this isn't allowed
+          DocGenDependency,
+          normalModuleFactory
+        );
+        compilation.dependencyTemplates.set(
+          // eslint-disable-next-line
+          // @ts-ignore TODO: Figure out why this isn't allowed
+          DocGenDependency,
+          new DocGenDependency.Template()
+        );
+
         // eslint-disable-next-line
-        // @ts-ignore TODO: Figure out why this isn't allowed
-        DocGenDependency,
-        new DocGenDependency.Template()
-      );
+        // @ts-ignore: TODO: What's the type of a parser?
+        const handler = (parser) => {
+          console.log("parser", parser.state);
 
+          if (parser.state) {
+            console.log("found parser state");
+
+            // what parameters to pass?
+            const dependency = new DocGenDependency();
+
+            parser.state.module.addDependency(dependency);
+          }
+        };
+
+        normalModuleFactory.hooks.parser
+          .for("javascript/auto")
+          .tap("ProvidePlugin", handler);
+        normalModuleFactory.hooks.parser
+          .for("javascript/dynamic")
+          .tap("ProvidePlugin", handler);
+        normalModuleFactory.hooks.parser
+          .for("javascript/esm")
+          .tap("ProvidePlugin", handler);
+
+        /*
       compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
         // eslint-disable-next-line
         // @ts-ignore
@@ -236,7 +277,9 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
         // @ts-ignore TODO: Figure out why assinging a sub-class doesn't work
         module.addDependency(dependency);
       });
-    });
+      */
+      }
+    );
   }
 
   // TODO: Eliminate this one after the new apply works
