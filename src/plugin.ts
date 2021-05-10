@@ -94,7 +94,7 @@ export default class DocgenPlugin {
   apply(compiler: webpack.Compiler): void {
     const pluginName = "DocGenPlugin";
 
-    const { exclude, include } = this.options;
+    const { exclude = [], include = ["**/**.tsx"] } = this.options;
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
 
