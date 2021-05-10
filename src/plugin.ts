@@ -240,16 +240,12 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
         // eslint-disable-next-line
         // @ts-ignore: TODO: What's the type of a parser?
         const handler = (parser) => {
-          console.log("parser", parser.state);
-
-          if (parser.state) {
-            console.log("found parser state");
-
-            // what parameters to pass?
+          parser.hooks.program.tap(pluginName, () => {
+            // TODO: what parameters to pass?
             const dependency = new DocGenDependency();
 
             parser.state.module.addDependency(dependency);
-          }
+          });
         };
 
         normalModuleFactory.hooks.parser
