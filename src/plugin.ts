@@ -241,10 +241,49 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
         // @ts-ignore: TODO: What's the type of a parser?
         const handler = (parser) => {
           parser.hooks.program.tap(pluginName, () => {
-            // TODO: what parameters to pass?
-            const dependency = new DocGenDependency();
+            // eslint-disable-next-line
+            // @ts-ignore
+            const { module } = parser.state;
 
-            parser.state.module.addDependency(dependency);
+            if (!module.built) {
+              debugExclude(`Ignoring un-built module: ${module.userRequest}`);
+              return;
+            }
+
+            if (module.external) {
+              debugExclude(`Ignoring external module: ${module.userRequest}`);
+              return;
+            }
+
+            if (!module.rawRequest) {
+              debugExclude(
+                `Ignoring module without "rawRequest": ${module.userRequest}`
+              );
+              return;
+            }
+
+            // TODO: Re-enable
+            /*
+            if (isExcluded(module.userRequest)) {
+              debugExclude(
+                `Module not matched in "exclude": ${module.userRequest}`
+              );
+              return;
+            }
+  
+            if (!isIncluded(module.userRequest)) {
+              debugExclude(
+                `Module not matched in "include": ${module.userRequest}`
+              );
+              return;
+            }
+            */
+
+            // eslint-disable-next-line
+            // @ts-ignore
+            const dependency = new DocGenDependency(module.request);
+
+            module.addDependency(dependency);
           });
         };
 
@@ -257,25 +296,6 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
         normalModuleFactory.hooks.parser
           .for("javascript/esm")
           .tap(pluginName, handler);
-
-        /*
-      compilation.hooks.buildModule.tap("DocGenPlugin", (module) => {
-        // eslint-disable-next-line
-        // @ts-ignore
-        console.log("at build module", module.request);
-
-        // eslint-disable-next-line
-        // @ts-ignore
-        const dependency = new DocGenDependency(module.request);
-
-        // TODO: Add the dependency based on include/exclude. For now,
-        // we apply for everything.
-
-        // eslint-disable-next-line
-        // @ts-ignore TODO: Figure out why assinging a sub-class doesn't work
-        module.addDependency(dependency);
-      });
-      */
       }
     );
   }

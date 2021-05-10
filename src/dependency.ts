@@ -41,12 +41,13 @@ class DocGenDependency extends ModuleDependency {
   }
 
   get category(): string {
-    return "esm"; // "docs";
+    return "docs";
   }
 
   // TODO: updateHash, serialize, deserialize
 }
 
+// TODO
 makeSerializable(DocGenDependency, "src/dependency");
 
 class DocGenTemplate extends ModuleDependency.Template {
@@ -60,7 +61,8 @@ class DocGenTemplate extends ModuleDependency.Template {
     console.log("APPLYING template");
 
     // TODO: Insert type annotations here
-    source.insert(0, "hello world");
+    // source.insert(0, "hello world");
+    // source.replace(0, 10, "hello world");
   }
 }
 
