@@ -109,7 +109,6 @@ export default class DocgenPlugin {
           DocGenDependency,
           new DocGenDependency.Template({
             parser: this.parser,
-            compilerOptions: this.compilerOptions,
             docgenOptions: this.docgenOptions,
           })
         );

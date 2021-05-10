@@ -28,7 +28,7 @@
     "debug": "^4.1.1",
     "endent": "^2.0.1",
     "micromatch": "^4.0.2",
-    "react-docgen-typescript": "^1.20.5",
+    "react-docgen-typescript": "^1.22.0",
     "tslib": "^2.0.0",
     "webpack-sources": "^2.2.0"
   },

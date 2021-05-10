@@ -52,7 +52,6 @@ makeSerializable(DocGenDependency, "src/dependency");
 
 type Options = {
   parser: docGen.FileParser;
-  compilerOptions: ts.CompilerOptions;
   docgenOptions: LoaderOptions;
 };
 
@@ -72,14 +71,7 @@ class DocGenTemplate extends ModuleDependency.Template {
 
     console.log("user request", userRequest);
 
-    const tsProgram = ts.createProgram(
-      [userRequest],
-      this.options.compilerOptions
-    );
-    const componentDocs = this.options.parser.parseWithProgramProvider(
-      userRequest,
-      () => tsProgram
-    );
+    const componentDocs = this.options.parser.parse(userRequest);
 
     console.log("component docs", componentDocs);
 
