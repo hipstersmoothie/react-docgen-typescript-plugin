@@ -61,7 +61,7 @@ class DocGenTemplate extends ModuleDependency.Template {
     console.log("APPLYING template");
 
     // TODO: Insert type annotations here
-    // source.insert(0, "hello world");
+    source.insert(0, "hello world");
     // source.replace(0, 10, "hello world");
   }
 }

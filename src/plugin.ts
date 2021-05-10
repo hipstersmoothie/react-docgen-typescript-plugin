@@ -245,7 +245,11 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
             // @ts-ignore
             const { module } = parser.state;
 
+            console.log("module", module.rawRequest);
+
             if (!module.built) {
+              console.log("ignoring built");
+
               debugExclude(`Ignoring un-built module: ${module.userRequest}`);
               return;
             }
@@ -261,6 +265,8 @@ Most plugins in webpack/lib/dependencies/*Plugin.js add Dependency and Templates
               );
               return;
             }
+
+            console.log("adding dependency");
 
             // TODO: Re-enable
             /*
