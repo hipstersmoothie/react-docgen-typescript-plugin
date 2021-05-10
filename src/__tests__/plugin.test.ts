@@ -35,11 +35,11 @@ function compile(config: Configuration): Promise<string> {
   });
 }
 
-// TODO: Maybe it's easier for testing to expose a way to write types to the fs
 const getConfig = (
   options = {},
   config: { title?: string } = {}
 ): Configuration => ({
+  mode: "none",
   entry: { main: "./src/__tests__/__fixtures__/Simple.tsx" },
   plugins: [new ReactDocgenTypeScriptPlugin(options)],
   module: {
@@ -56,11 +56,9 @@ const getConfig = (
   ...config,
 });
 
+// TODO: What else to test and how?
 test("default options", async () => {
   const result = await compile(getConfig({}));
 
-  // console.log("result", result);
-
-  // expect(result).toMatchSnapshot();
-  expect(true).toEqual(true);
+  expect(result).toContain("STORYBOOK_REACT_CLASSES");
 });
