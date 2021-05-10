@@ -65,21 +65,16 @@ class DocGenTemplate extends ModuleDependency.Template {
   }
 
   apply(dependency: Dependency, source: ReplaceSource): void {
-    console.log("APPLYING template");
-
     const { userRequest } = dependency;
 
-    console.log("user request", userRequest);
-
-    const componentDocs = this.options.parser.parse(userRequest);
-
-    console.log("component docs", componentDocs);
+    // TODO: Make sure this is foolproof. Is there a better way
+    // to get a pure path?
+    const modulePath = userRequest.split("!")[1];
+    const componentDocs = this.options.parser.parse(modulePath);
 
     if (!componentDocs.length) {
       return;
     }
-
-    console.log("GENERATING docgen codeblock");
 
     // TODO: Instead of substring, should this replace instead?
     const docgenBlock = generateDocgenCodeBlock({
@@ -92,8 +87,6 @@ class DocGenTemplate extends ModuleDependency.Template {
       setDisplayName: this.options.docgenOptions.setDisplayName || true,
       typePropName: this.options.docgenOptions.typePropName || "type",
     }).substring(userRequest.length);
-
-    console.log("DOCGEN block", docgenBlock);
 
     source.insert(userRequest.length, docgenBlock);
   }

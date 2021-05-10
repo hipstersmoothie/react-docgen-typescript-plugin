@@ -90,6 +90,8 @@ export default class DocgenPlugin {
     this.options = options;
     this.compilerOptions = compilerOptions;
     this.docgenOptions = docgenOptions;
+
+    // Maintain the doc gen parser here to save time later
     this.parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
   }
 
