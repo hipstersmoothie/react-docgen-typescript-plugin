@@ -67,16 +67,19 @@ class DocGenTemplate extends ModuleDependency.Template {
   apply(dependency: Dependency, source: ReplaceSource): void {
     const { userRequest } = dependency;
 
-    // TODO: Make sure this is foolproof. Is there a better way
-    // to get a pure path?
-    const modulePath = userRequest.split("!")[1];
+    // Since parsing fails with a path including !, remove it.
+    // The problem is that webpack injects that and there doesn't
+    // seem to be a good way to get only the path itself from
+    // a dependency.
+    const modulePath = userRequest.includes("!")
+      ? userRequest.split("!")[1]
+      : userRequest;
     const componentDocs = this.options.parser.parse(modulePath);
 
     if (!componentDocs.length) {
       return;
     }
 
-    // TODO: Instead of substring, should this replace instead?
     const docgenBlock = generateDocgenCodeBlock({
       filename: userRequest,
       source: userRequest,
