@@ -9,7 +9,10 @@ import { matcher } from "micromatch";
 
 import { LoaderOptions } from "./types";
 import DocGenDependency from "./dependency";
-import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
+import {
+  generateDocgenCodeBlock,
+  GeneratorOptions,
+} from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
 
@@ -68,8 +71,15 @@ export default class DocgenPlugin implements WebpackPluginInstance {
 
   apply(compiler: Compiler): void {
     const pluginName = "DocGenPlugin";
-    const { docgenOptions, compilerOptions } = this.getOptions();
-    const docGenParser = docGen.withCompilerOptions(compilerOptions);
+    const {
+      docgenOptions,
+      compilerOptions,
+      generateOptions,
+    } = this.getOptions();
+    const docGenParser = docGen.withCompilerOptions(
+      compilerOptions,
+      docgenOptions
+    );
     const { exclude = [], include = ["**/**.tsx"] } = this.options;
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
@@ -116,11 +126,7 @@ export default class DocgenPlugin implements WebpackPluginInstance {
                   filename: nameForCondition,
                   source: nameForCondition,
                   componentDocs,
-                  docgenCollectionName:
-                    docgenOptions.docgenCollectionName ||
-                    "STORYBOOK_REACT_CLASSES",
-                  setDisplayName: docgenOptions.setDisplayName || true,
-                  typePropName: docgenOptions.typePropName || "type",
+                  ...generateOptions,
                 }).substring(module.userRequest.length)
               )
             );
@@ -141,12 +147,20 @@ export default class DocgenPlugin implements WebpackPluginInstance {
   }
 
   getOptions(): {
-    docgenOptions: LoaderOptions;
+    docgenOptions: docGen.ParserOptions;
+    generateOptions: {
+      docgenCollectionName: GeneratorOptions["docgenCollectionName"];
+      setDisplayName: GeneratorOptions["setDisplayName"];
+      typePropName: GeneratorOptions["typePropName"];
+    };
     compilerOptions: ts.CompilerOptions;
   } {
     const {
       tsconfigPath = "./tsconfig.json",
       compilerOptions: userCompilerOptions,
+      docgenCollectionName,
+      setDisplayName,
+      typePropName,
       ...docgenOptions
     } = this.options;
 
@@ -166,7 +180,15 @@ export default class DocgenPlugin implements WebpackPluginInstance {
       compilerOptions = { ...compilerOptions, ...tsOptions };
     }
 
-    return { docgenOptions, compilerOptions };
+    return {
+      docgenOptions,
+      generateOptions: {
+        docgenCollectionName: docgenCollectionName || "STORYBOOK_REACT_CLASSES",
+        setDisplayName: setDisplayName || true,
+        typePropName: typePropName || "type",
+      },
+      compilerOptions,
+    };
   }
 }
 
