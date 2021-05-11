@@ -20,6 +20,13 @@ import { LoaderOptions } from "./types";
 
 class DocGenDependency extends NullDependency {
   public static Template: NullDependency.Template;
+  private componentDocs: docGen.ComponentDoc[];
+
+  constructor(request: string, componentDocs: docGen.ComponentDoc[]) {
+    super(request);
+
+    this.componentDocs = componentDocs;
+  }
 
   // TODO: Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules)
 }
@@ -50,31 +57,23 @@ class DocGenTemplate extends NullDependency.Template {
   ): void {
     const { userRequest } = module;
 
-    // Since parsing fails with a path including !, remove it.
-    // The problem is that webpack injects that and there doesn't
-    // seem to be a good way to get only the path itself from
-    // a dependency.
-    const modulePath = userRequest.includes("!")
-      ? userRequest.split("!")[1]
-      : userRequest;
-    const componentDocs = this.options.parser.parse(modulePath);
-
-    if (!componentDocs.length) {
+    if (!dependency.componentDocs.length) {
       return;
     }
 
-    const docgenBlock = generateDocgenCodeBlock({
-      filename: userRequest,
-      source: userRequest,
-      componentDocs,
-      docgenCollectionName:
-        this.options.docgenOptions.docgenCollectionName ||
-        "STORYBOOK_REACT_CLASSES",
-      setDisplayName: this.options.docgenOptions.setDisplayName || true,
-      typePropName: this.options.docgenOptions.typePropName || "type",
-    }).substring(userRequest.length);
-
-    source.insert(0, docgenBlock);
+    source.insert(
+      0,
+      generateDocgenCodeBlock({
+        filename: userRequest,
+        source: userRequest,
+        componentDocs: dependency.componentDocs,
+        docgenCollectionName:
+          this.options.docgenOptions.docgenCollectionName ||
+          "STORYBOOK_REACT_CLASSES",
+        setDisplayName: this.options.docgenOptions.setDisplayName || true,
+        typePropName: this.options.docgenOptions.typePropName || "type",
+      }).substring(userRequest.length)
+    );
   }
 }
 

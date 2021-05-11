@@ -140,7 +140,12 @@ export default class DocgenPlugin {
 
             // eslint-disable-next-line
             // @ts-ignore
-            module.addDependency(new DocGenDependency(module.request));
+            module.addDependency(
+              new DocGenDependency(
+                module.request,
+                this.parser.parse(nameForCondition)
+              )
+            );
           });
         };
 
