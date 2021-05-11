@@ -32,6 +32,8 @@ class DocGenDependency extends ModuleDependency {
   get category(): string {
     return "docs";
   }
+
+  // TODO: Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules)
 }
 
 makeSerializable(DocGenDependency, "src/dependency");
