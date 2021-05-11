@@ -24,7 +24,10 @@ class DocGenDependency extends NullDependency {
   // TODO: Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules)
 }
 
-makeSerializable(DocGenDependency, "src/dependency");
+makeSerializable(
+  DocGenDependency,
+  "react-docgen-typescript-plugin/dist/dependency"
+);
 
 type Options = {
   parser: docGen.FileParser;
