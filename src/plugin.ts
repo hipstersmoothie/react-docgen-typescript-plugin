@@ -138,8 +138,6 @@ export default class DocgenPlugin {
               return;
             }
 
-            // eslint-disable-next-line
-            // @ts-ignore
             module.addDependency(
               new DocGenDependency(
                 module.request,
