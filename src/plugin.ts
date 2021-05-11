@@ -7,6 +7,10 @@ import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
 
+// eslint-disable-next-line
+// @ts-ignore: What's the right way to refer to this one?
+import JavascriptParser from "webpack/lib/javascript/JavascriptParser.js";
+
 import { LoaderOptions } from "./types";
 import DocGenDependency from "./dependency";
 import {
@@ -94,9 +98,7 @@ export default class DocgenPlugin implements WebpackPluginInstance {
           new DocGenDependency.Template()
         );
 
-        // eslint-disable-next-line
-        // @ts-ignore: TODO: What's the type of a parser?
-        const handler = (parser) => {
+        const handler = (parser: JavascriptParser) => {
           parser.hooks.program.tap(pluginName, () => {
             // eslint-disable-next-line
             // @ts-ignore
