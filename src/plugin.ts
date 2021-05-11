@@ -122,24 +122,18 @@ export default class DocgenPlugin {
             // eslint-disable-next-line
             // @ts-ignore
             const { module } = parser.state;
+            const nameForCondition = module.nameForCondition();
 
-            if (!module.rawRequest) {
+            if (isExcluded(nameForCondition)) {
               debugExclude(
-                `Ignoring module without "rawRequest": ${module.userRequest}`
+                `Module not matched in "exclude": ${nameForCondition}`
               );
               return;
             }
 
-            if (isExcluded(module.userRequest)) {
+            if (!isIncluded(nameForCondition)) {
               debugExclude(
-                `Module not matched in "exclude": ${module.userRequest}`
-              );
-              return;
-            }
-
-            if (!isIncluded(module.userRequest)) {
-              debugExclude(
-                `Module not matched in "include": ${module.userRequest}`
+                `Module not matched in "include": ${nameForCondition}`
               );
               return;
             }
