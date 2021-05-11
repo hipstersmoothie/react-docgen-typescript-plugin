@@ -110,7 +110,6 @@ export default class DocgenPlugin {
           // eslint-disable-next-line
           // @ts-ignore TODO: Figure out why this isn't allowed
           DocGenDependency,
-          // TODO: Use ConstDependency.Template instead?
           new DocGenDependency.Template()
         );
 
