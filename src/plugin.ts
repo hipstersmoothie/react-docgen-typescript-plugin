@@ -2,7 +2,7 @@
 
 import path from "path";
 import createDebug from "debug";
-import * as webpack from "webpack";
+import { Compiler, WebpackPluginInstance } from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
@@ -58,7 +58,7 @@ const matchGlob = (globs?: string[]) => {
 };
 
 /** Inject typescript docgen information into modules at the end of a build */
-export default class DocgenPlugin {
+export default class DocgenPlugin implements WebpackPluginInstance {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
   private parser: docGen.FileParser;
@@ -96,7 +96,7 @@ export default class DocgenPlugin {
     this.parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
   }
 
-  apply(compiler: webpack.Compiler): void {
+  apply(compiler: Compiler): void {
     const pluginName = "DocGenPlugin";
 
     const { exclude = [], include = ["**/**.tsx"] } = this.options;
