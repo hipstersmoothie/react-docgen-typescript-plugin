@@ -123,18 +123,6 @@ export default class DocgenPlugin {
             // @ts-ignore
             const { module } = parser.state;
 
-            // Break the recursion. Without this the plugin will get stuck in
-            // an eternal loop as dependencies are added.
-            if (!module.userRequest) {
-              debugExclude(`Ignoring external module: ${module.userRequest}`);
-              return;
-            }
-
-            if (module.external) {
-              debugExclude(`Ignoring external module: ${module.userRequest}`);
-              return;
-            }
-
             if (!module.rawRequest) {
               debugExclude(
                 `Ignoring module without "rawRequest": ${module.userRequest}`
