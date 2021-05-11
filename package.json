@@ -6,6 +6,10 @@
   "repository": "hipstersmoothie/react-docgen-typescript-plugin",
   "author": "Andrew Lisowski <lisowski54@gmail.com>",
   "main": "dist/index.js",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "scripts": {
     "build:example": "npm run build && webpack",
     "build": "tsc -p tsconfig.build.json",
