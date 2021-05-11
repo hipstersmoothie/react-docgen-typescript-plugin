@@ -1,11 +1,10 @@
 /* eslint-disable max-classes-per-file */
 
 import { ReplaceSource } from "webpack-sources";
-import * as docGen from "react-docgen-typescript";
 
 // eslint-disable-next-line
 // @ts-ignore: What's the right way to refer to this one?
-import Module from "webpack/lib/Module.js";
+import Hash from "webpack/lib/util/Hash.js";
 
 // eslint-disable-next-line
 // @ts-ignore: What's the right way to refer to this one?
@@ -25,7 +24,9 @@ class DocGenDependency extends NullDependency {
     this.codeBlock = codeBlock;
   }
 
-  // TODO: Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules)
+  updateHash(hash: Hash): void {
+    hash.update(this.codeBlock);
+  }
 }
 
 makeSerializable(
