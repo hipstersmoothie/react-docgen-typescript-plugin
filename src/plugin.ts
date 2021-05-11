@@ -61,42 +61,15 @@ const matchGlob = (globs?: string[]) => {
 export default class DocgenPlugin implements WebpackPluginInstance {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
-  private parser: docGen.FileParser;
-  private docgenOptions: LoaderOptions;
 
   constructor(options: PluginOptions = {}) {
-    const {
-      tsconfigPath = "./tsconfig.json",
-      compilerOptions: userCompilerOptions,
-      ...docgenOptions
-    } = options;
-
-    let compilerOptions = {
-      jsx: ts.JsxEmit.React,
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.Latest,
-    };
-
-    if (userCompilerOptions) {
-      compilerOptions = {
-        ...compilerOptions,
-        ...userCompilerOptions,
-      };
-    } else {
-      const { options: tsOptions } = getTSConfigFile(tsconfigPath);
-      compilerOptions = { ...compilerOptions, ...tsOptions };
-    }
-
     this.options = options;
-    this.docgenOptions = docgenOptions;
-
-    // Maintain the doc gen parser here to save time later
-    this.parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
   }
 
   apply(compiler: Compiler): void {
     const pluginName = "DocGenPlugin";
-
+    const { docgenOptions, compilerOptions } = this.getOptions();
+    const docGenParser = docGen.withCompilerOptions(compilerOptions);
     const { exclude = [], include = ["**/**.tsx"] } = this.options;
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
@@ -134,7 +107,7 @@ export default class DocgenPlugin implements WebpackPluginInstance {
               return;
             }
 
-            const componentDocs = this.parser.parse(nameForCondition);
+            const componentDocs = docGenParser.parse(nameForCondition);
 
             module.addDependency(
               new DocGenDependency(
@@ -144,10 +117,10 @@ export default class DocgenPlugin implements WebpackPluginInstance {
                   source: nameForCondition,
                   componentDocs,
                   docgenCollectionName:
-                    this.docgenOptions.docgenCollectionName ||
+                    docgenOptions.docgenCollectionName ||
                     "STORYBOOK_REACT_CLASSES",
-                  setDisplayName: this.docgenOptions.setDisplayName || true,
-                  typePropName: this.docgenOptions.typePropName || "type",
+                  setDisplayName: docgenOptions.setDisplayName || true,
+                  typePropName: docgenOptions.typePropName || "type",
                 }).substring(module.userRequest.length)
               )
             );
@@ -165,6 +138,35 @@ export default class DocgenPlugin implements WebpackPluginInstance {
           .tap(pluginName, handler);
       }
     );
+  }
+
+  getOptions(): {
+    docgenOptions: LoaderOptions;
+    compilerOptions: ts.CompilerOptions;
+  } {
+    const {
+      tsconfigPath = "./tsconfig.json",
+      compilerOptions: userCompilerOptions,
+      ...docgenOptions
+    } = this.options;
+
+    let compilerOptions = {
+      jsx: ts.JsxEmit.React,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.Latest,
+    };
+
+    if (userCompilerOptions) {
+      compilerOptions = {
+        ...compilerOptions,
+        ...userCompilerOptions,
+      };
+    } else {
+      const { options: tsOptions } = getTSConfigFile(tsconfigPath);
+      compilerOptions = { ...compilerOptions, ...tsOptions };
+    }
+
+    return { docgenOptions, compilerOptions };
   }
 }
 
