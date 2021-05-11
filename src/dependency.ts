@@ -15,9 +15,6 @@ import makeSerializable from "webpack/lib/util/makeSerializable.js";
 // @ts-ignore TODO: Figure out where to find a typed version
 import NullDependency from "webpack/lib/dependencies/NullDependency.js";
 
-import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
-import { LoaderOptions } from "./types";
-
 class DocGenDependency extends NullDependency {
   public static Template: NullDependency.Template;
   private codeBlock: string;
