@@ -74,7 +74,7 @@ class DocGenTemplate extends NullDependency.Template {
       typePropName: this.options.docgenOptions.typePropName || "type",
     }).substring(userRequest.length);
 
-    source.insert(userRequest.length, docgenBlock);
+    source.insert(0, docgenBlock);
   }
 }
 
