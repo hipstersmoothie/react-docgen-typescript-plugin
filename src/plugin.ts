@@ -62,7 +62,6 @@ export default class DocgenPlugin implements WebpackPluginInstance {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
   private parser: docGen.FileParser;
-  private compilerOptions: ts.CompilerOptions;
   private docgenOptions: LoaderOptions;
 
   constructor(options: PluginOptions = {}) {
@@ -89,7 +88,6 @@ export default class DocgenPlugin implements WebpackPluginInstance {
     }
 
     this.options = options;
-    this.compilerOptions = compilerOptions;
     this.docgenOptions = docgenOptions;
 
     // Maintain the doc gen parser here to save time later
