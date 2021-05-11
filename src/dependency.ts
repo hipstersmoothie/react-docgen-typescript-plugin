@@ -20,12 +20,12 @@ import { LoaderOptions } from "./types";
 
 class DocGenDependency extends NullDependency {
   public static Template: NullDependency.Template;
-  private componentDocs: docGen.ComponentDoc[];
+  private codeBlock: string;
 
-  constructor(request: string, componentDocs: docGen.ComponentDoc[]) {
+  constructor(request: string, codeBlock: string) {
     super(request);
 
-    this.componentDocs = componentDocs;
+    this.codeBlock = codeBlock;
   }
 
   // TODO: Note if you want that modules correctly invalidate and cache you need to add updateHash to your Dependency and hash the type info (because that might change depending on outside factors (other modules)
@@ -35,45 +35,11 @@ makeSerializable(
   DocGenDependency,
   "react-docgen-typescript-plugin/dist/dependency"
 );
-
-type Options = {
-  parser: docGen.FileParser;
-  docgenOptions: LoaderOptions;
-};
-
 class DocGenTemplate extends NullDependency.Template {
-  private options: Options;
-
-  constructor(options: Options) {
-    super();
-
-    this.options = options;
-  }
-
-  apply(
-    dependency: NullDependency,
-    source: ReplaceSource,
-    { module }: { module: Module }
-  ): void {
-    const { userRequest } = module;
-
-    if (!dependency.componentDocs.length) {
-      return;
+  apply(dependency: NullDependency, source: ReplaceSource): void {
+    if (dependency.codeBlock) {
+      source.insert(0, dependency.codeBlock);
     }
-
-    source.insert(
-      0,
-      generateDocgenCodeBlock({
-        filename: userRequest,
-        source: userRequest,
-        componentDocs: dependency.componentDocs,
-        docgenCollectionName:
-          this.options.docgenOptions.docgenCollectionName ||
-          "STORYBOOK_REACT_CLASSES",
-        setDisplayName: this.options.docgenOptions.setDisplayName || true,
-        typePropName: this.options.docgenOptions.typePropName || "type",
-      }).substring(userRequest.length)
-    );
   }
 }
 

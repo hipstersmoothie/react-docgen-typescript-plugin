@@ -9,6 +9,7 @@ import { matcher } from "micromatch";
 
 import { LoaderOptions } from "./types";
 import DocGenDependency from "./dependency";
+import { generateDocgenCodeBlock } from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
 
@@ -109,10 +110,8 @@ export default class DocgenPlugin {
           // eslint-disable-next-line
           // @ts-ignore TODO: Figure out why this isn't allowed
           DocGenDependency,
-          new DocGenDependency.Template({
-            parser: this.parser,
-            docgenOptions: this.docgenOptions,
-          })
+          // TODO: Use ConstDependency.Template instead?
+          new DocGenDependency.Template()
         );
 
         // eslint-disable-next-line
@@ -138,10 +137,21 @@ export default class DocgenPlugin {
               return;
             }
 
+            const componentDocs = this.parser.parse(nameForCondition);
+
             module.addDependency(
               new DocGenDependency(
                 module.request,
-                this.parser.parse(nameForCondition)
+                generateDocgenCodeBlock({
+                  filename: nameForCondition,
+                  source: nameForCondition,
+                  componentDocs,
+                  docgenCollectionName:
+                    this.docgenOptions.docgenCollectionName ||
+                    "STORYBOOK_REACT_CLASSES",
+                  setDisplayName: this.docgenOptions.setDisplayName || true,
+                  typePropName: this.docgenOptions.typePropName || "type",
+                }).substring(module.userRequest.length)
               )
             );
           });
