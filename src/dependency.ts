@@ -36,7 +36,8 @@ makeSerializable(
 class DocGenTemplate extends NullDependency.Template {
   apply(dependency: NullDependency, source: ReplaceSource): void {
     if (dependency.codeBlock) {
-      source.insert(0, dependency.codeBlock);
+      // Insert to the end
+      source.insert(Infinity, dependency.codeBlock);
     }
   }
 }
