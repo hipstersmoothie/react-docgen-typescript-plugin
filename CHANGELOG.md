@@ -1,3 +1,19 @@
+# v0.7.1 (Tue May 11 2021)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, Kyle Herock ([@kherock](https://github.com/kherock)), for all your work!
+
+#### 🐛 Bug Fix
+
+- Include dotfiles in micromatch globs [#34](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/34) ([@kherock](https://github.com/kherock))
+
+#### Authors: 1
+
+- Kyle Herock ([@kherock](https://github.com/kherock))
+
+---
+
 # v0.7.0 (Fri Dec 04 2020)
 
 #### 🚀 Enhancement

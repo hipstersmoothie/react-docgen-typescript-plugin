@@ -59,7 +59,8 @@ function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
 
 /** Create a glob matching function. */
 const matchGlob = (globs?: string[]) => {
-  const matchers = (globs || []).map((g) => matcher(g));
+  const matchers = (globs || []).map((g) => matcher(g, { dot: true }));
+
   return (filename: string) =>
     Boolean(filename && matchers.find((match) => match(filename)));
 };
