@@ -124,7 +124,6 @@ export default class DocgenPlugin implements WebpackPluginInstance {
 
             module.addDependency(
               new DocGenDependency(
-                module.request,
                 generateDocgenCodeBlock({
                   filename: nameForCondition,
                   source: nameForCondition,
