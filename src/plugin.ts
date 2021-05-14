@@ -1,6 +1,5 @@
 import path from "path";
 import createDebug from "debug";
-import { Compiler, WebpackPluginInstance } from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
@@ -60,8 +59,53 @@ const matchGlob = (globs?: string[]) => {
     Boolean(filename && matchers.find((match) => match(filename)));
 };
 
+/** Run the docgen parser and inject the result into the output */
+/** This is used for webpack 4 or earlier */
+function processModule(
+  parser: docGen.FileParser,
+  webpackModule: webpack.Module,
+  tsProgram: ts.Program,
+  loaderOptions: Required<LoaderOptions>
+) {
+  if (!webpackModule) {
+    return;
+  }
+
+  // eslint-disable-next-line
+  // @ts-ignore: Webpack 4 type
+  const { userRequest } = webpackModule;
+
+  const componentDocs = parser.parseWithProgramProvider(
+    userRequest,
+    () => tsProgram
+  );
+
+  if (!componentDocs.length) {
+    return;
+  }
+
+  const docs = generateDocgenCodeBlock({
+    filename: userRequest,
+    source: userRequest,
+    componentDocs,
+    ...loaderOptions,
+  }).substring(userRequest.length);
+
+  // eslint-disable-next-line
+  // @ts-ignore: Webpack 4 type
+  // eslint-disable-next-line
+  let sourceWithDocs = webpackModule._source._value;
+
+  sourceWithDocs += `\n${docs}\n`;
+
+  // eslint-disable-next-line
+  // @ts-ignore: Webpack 4 type
+  // eslint-disable-next-line
+  webpackModule._source._value = sourceWithDocs;
+}
+
 /** Inject typescript docgen information into modules at the end of a build */
-export default class DocgenPlugin implements WebpackPluginInstance {
+export default class DocgenPlugin implements webpack.WebpackPluginInstance {
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
 
@@ -69,7 +113,7 @@ export default class DocgenPlugin implements WebpackPluginInstance {
     this.options = options;
   }
 
-  apply(compiler: Compiler): void {
+  apply(compiler: webpack.Compiler): void {
     const pluginName = "DocGenPlugin";
     const {
       docgenOptions,
@@ -83,12 +127,20 @@ export default class DocgenPlugin implements WebpackPluginInstance {
     const { exclude = [], include = ["**/**.tsx"] } = this.options;
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
+    const webpackVersion = compiler.webpack.version;
+    const isWebpack5 = parseInt(webpackVersion.split(".")[0], 10) >= 5;
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
-      compilation.dependencyTemplates.set(
-        DocGenDependency,
-        new DocGenDependency.Template()
-      );
+      if (isWebpack5) {
+        compilation.dependencyTemplates.set(
+          // eslint-disable-next-line
+          // @ts-ignore: Webpack 4 type
+          DocGenDependency,
+          // eslint-disable-next-line
+          // @ts-ignore: Webpack 4 type
+          new DocGenDependency.Template()
+        );
+      }
 
       compilation.hooks.seal.tap(pluginName, () => {
         const modulesToProcess: [string, webpack.Module][] = [];
@@ -122,21 +174,28 @@ export default class DocgenPlugin implements WebpackPluginInstance {
 
         // 3. Process and parse each module and add the type information
         // as a dependency
-        modulesToProcess.forEach(([name, module]) =>
-          module.addDependency(
-            new DocGenDependency(
-              generateDocgenCodeBlock({
-                filename: name,
-                source: name,
-                componentDocs: docGenParser.parseWithProgramProvider(
-                  name,
-                  () => tsProgram
-                ),
-                ...generateOptions,
-              })
-            )
-          )
-        );
+        modulesToProcess.forEach(([name, module]) => {
+          if (isWebpack5) {
+            module.addDependency(
+              // eslint-disable-next-line
+              // @ts-ignore: Webpack 4 type
+              new DocGenDependency(
+                generateDocgenCodeBlock({
+                  filename: name,
+                  source: name,
+                  componentDocs: docGenParser.parseWithProgramProvider(
+                    name,
+                    () => tsProgram
+                  ),
+                  ...generateOptions,
+                })
+              )
+            );
+          } else {
+            // Assume webpack 4 or earlier
+            processModule(docGenParser, module, tsProgram, generateOptions);
+          }
+        });
       });
     });
   }
