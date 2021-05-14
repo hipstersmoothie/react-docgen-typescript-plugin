@@ -4,6 +4,7 @@ import { Compiler, WebpackPluginInstance } from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
+import * as webpack from "webpack";
 
 import { LoaderOptions } from "./types";
 import DocGenDependency from "./dependency";
@@ -90,7 +91,10 @@ export default class DocgenPlugin implements WebpackPluginInstance {
       );
 
       compilation.hooks.seal.tap(pluginName, () => {
-        for (const module of compilation.modules) {
+        const modulesToProcess: [string, webpack.Module][] = [];
+
+        // 1. Aggregate modules to process
+        compilation.modules.forEach((module: webpack.Module) => {
           const nameForCondition = module.nameForCondition() || "";
 
           if (isExcluded(nameForCondition)) {
@@ -107,19 +111,32 @@ export default class DocgenPlugin implements WebpackPluginInstance {
             return;
           }
 
-          const componentDocs = docGenParser.parse(nameForCondition);
+          modulesToProcess.push([nameForCondition, module]);
+        });
 
+        // 2. Create a ts program with the modules
+        const tsProgram = ts.createProgram(
+          modulesToProcess.map(([name]) => name),
+          compilerOptions
+        );
+
+        // 3. Process and parse each module and add the type information
+        // as a dependency
+        modulesToProcess.forEach(([name, module]) =>
           module.addDependency(
             new DocGenDependency(
               generateDocgenCodeBlock({
-                filename: nameForCondition,
-                source: nameForCondition,
-                componentDocs,
+                filename: name,
+                source: name,
+                componentDocs: docGenParser.parseWithProgramProvider(
+                  name,
+                  () => tsProgram
+                ),
                 ...generateOptions,
               })
             )
-          );
-        }
+          )
+        );
       });
     });
   }
