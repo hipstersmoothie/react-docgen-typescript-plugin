@@ -1,15 +1,9 @@
-/* eslint-disable no-param-reassign, no-underscore-dangle */
-
 import path from "path";
 import createDebug from "debug";
 import { Compiler, WebpackPluginInstance } from "webpack";
 import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
-
-// eslint-disable-next-line
-// @ts-ignore: What's the right way to refer to this one?
-import JavascriptParser from "webpack/lib/javascript/JavascriptParser.js";
 
 import { LoaderOptions } from "./types";
 import DocGenDependency from "./dependency";
@@ -89,63 +83,45 @@ export default class DocgenPlugin implements WebpackPluginInstance {
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
 
-    compiler.hooks.compilation.tap(
-      pluginName,
-      (compilation, { normalModuleFactory }) => {
-        compilation.dependencyTemplates.set(
-          // eslint-disable-next-line
-          // @ts-ignore TODO: Figure out why this isn't allowed
-          DocGenDependency,
-          new DocGenDependency.Template()
-        );
+    compiler.hooks.compilation.tap(pluginName, (compilation) => {
+      compilation.dependencyTemplates.set(
+        DocGenDependency,
+        new DocGenDependency.Template()
+      );
 
-        const handler = (parser: JavascriptParser) => {
-          parser.hooks.program.tap(pluginName, () => {
-            // eslint-disable-next-line
-            // @ts-ignore
-            const { module } = parser.state;
-            const nameForCondition = module.nameForCondition();
+      compilation.hooks.seal.tap(pluginName, () => {
+        for (const module of compilation.modules) {
+          const nameForCondition = module.nameForCondition() || "";
 
-            if (isExcluded(nameForCondition)) {
-              debugExclude(
-                `Module not matched in "exclude": ${nameForCondition}`
-              );
-              return;
-            }
-
-            if (!isIncluded(nameForCondition)) {
-              debugExclude(
-                `Module not matched in "include": ${nameForCondition}`
-              );
-              return;
-            }
-
-            const componentDocs = docGenParser.parse(nameForCondition);
-
-            module.addDependency(
-              new DocGenDependency(
-                generateDocgenCodeBlock({
-                  filename: nameForCondition,
-                  source: nameForCondition,
-                  componentDocs,
-                  ...generateOptions,
-                }).substring(module.userRequest.length)
-              )
+          if (isExcluded(nameForCondition)) {
+            debugExclude(
+              `Module not matched in "exclude": ${nameForCondition}`
             );
-          });
-        };
+            return;
+          }
 
-        normalModuleFactory.hooks.parser
-          .for("javascript/auto")
-          .tap(pluginName, handler);
-        normalModuleFactory.hooks.parser
-          .for("javascript/dynamic")
-          .tap(pluginName, handler);
-        normalModuleFactory.hooks.parser
-          .for("javascript/esm")
-          .tap(pluginName, handler);
-      }
-    );
+          if (!isIncluded(nameForCondition)) {
+            debugExclude(
+              `Module not matched in "include": ${nameForCondition}`
+            );
+            return;
+          }
+
+          const componentDocs = docGenParser.parse(nameForCondition);
+
+          module.addDependency(
+            new DocGenDependency(
+              generateDocgenCodeBlock({
+                filename: nameForCondition,
+                source: nameForCondition,
+                componentDocs,
+                ...generateOptions,
+              })
+            )
+          );
+        }
+      });
+    });
   }
 
   getOptions(): {
