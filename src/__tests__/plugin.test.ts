@@ -1,6 +1,26 @@
 import webpack, { Configuration } from "webpack";
-import { createFsFromVolume, Volume } from "memfs";
+import { createFsFromVolume, IFs, Volume } from "memfs";
 import ReactDocgenTypeScriptPlugin from "..";
+
+// eslint-disable-next-line
+const joinPath = require("memory-fs/lib/join");
+
+// Hack for webpack 4. This isn't needed with 5
+// See more: https://github.com/streamich/memfs/issues/404.
+function ensureWebpackMemoryFs(fs: IFs) {
+  // Return it back, when it has Webpack 'join' method
+  // eslint-disable-next-line
+  // @ts-ignore
+  if (fs.join) {
+    return fs;
+  }
+
+  // Create FS proxy, adding `join` method to memfs, but not modifying original object
+  const nextFs = Object.create(fs);
+  nextFs.join = joinPath;
+
+  return nextFs;
+}
 
 function compile(config: Configuration): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -8,7 +28,9 @@ function compile(config: Configuration): Promise<string> {
 
     // eslint-disable-next-line
     // @ts-ignore: There's a type mismatch but this should work based on webpack source
-    compiler.outputFileSystem = createFsFromVolume(new Volume());
+    compiler.outputFileSystem = ensureWebpackMemoryFs(
+      createFsFromVolume(new Volume())
+    );
     const memfs = compiler.outputFileSystem;
 
     compiler.run((error, stats) => {
