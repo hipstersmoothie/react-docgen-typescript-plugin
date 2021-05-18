@@ -126,7 +126,8 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
     const { exclude = [], include = ["**/**.tsx"] } = this.options;
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
-    const webpackVersion = compiler.webpack.version;
+    // Property compiler.version is set only starting from webpack 5
+    const webpackVersion = compiler.webpack?.version;
     const isWebpack5 = parseInt(webpackVersion.split(".")[0], 10) >= 5;
 
     compiler.hooks.compilation.tap(
