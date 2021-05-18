@@ -16,9 +16,9 @@
     "start": "yarn build --watch",
     "lint": "eslint src --ext .ts,.js",
     "test": "npm run test:v4 && npm run test:v5",
-    "pretest:v4": "npm add @types/webpack ts-loader@8 webpack@4 --no-save",
+    "pretest:v4": "yarn-add-no-save @types/webpack ts-loader@8 webpack@4",
     "test:v4": "jest",
-    "pretest:v5": "npm add webpack@5 --no-save",
+    "pretest:v5": "yarn-add-no-save webpack@5",
     "test:v5": "jest",
     "release": "auto shipit"
   },
@@ -70,7 +70,8 @@
     "ts-loader": "^9.1.2",
     "typescript": "3.8.3",
     "webpack": "^5.36.2",
-    "webpack-cli": "^4.7.0"
+    "webpack-cli": "^4.7.0",
+    "yarn-add-no-save": "^1.0.3"
   },
   "peerDependencies": {
     "typescript": ">= 3.x",

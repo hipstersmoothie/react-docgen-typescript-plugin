@@ -6493,6 +6493,13 @@ yargs@^15.0.1, yargs@^15.4.1:
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
 
+yarn-add-no-save@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/yarn-add-no-save/-/yarn-add-no-save-1.0.3.tgz#03540f86802a46a86db83bc7357b248cd282315b"
+  integrity sha512-ngmmxwYOogvYPjFDXGjoj35r/DteDzfiyoq5BI+kKSCCXW/I2gJA3KAgbm/7yFmcDE9CGSaORpNbYfglGYuxtA==
+  dependencies:
+    which "^2.0.2"
+
 yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
