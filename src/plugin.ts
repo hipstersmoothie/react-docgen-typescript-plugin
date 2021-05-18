@@ -4,6 +4,9 @@ import ts from "typescript";
 import * as docGen from "react-docgen-typescript";
 import { matcher } from "micromatch";
 import * as webpack from "webpack";
+import findCacheDir from "find-cache-dir";
+import flatCache from "flat-cache";
+import crypto from "crypto";
 
 import { LoaderOptions } from "./types";
 import {
@@ -12,6 +15,7 @@ import {
 } from "./generateDocgenCodeBlock";
 
 const debugExclude = createDebug("docgen:exclude");
+const debugInclude = createDebug("docgen:include");
 
 interface TypescriptOptions {
   /**
@@ -58,6 +62,11 @@ const matchGlob = (globs?: string[]) => {
     Boolean(filename && matchers.find((match) => match(filename)));
 };
 
+// The cache is used only with webpack 4 for now as webpack 5 comes with caching of its own
+const cacheId = "ts-docgen";
+const cacheDir = findCacheDir({ name: cacheId });
+const cache = flatCache.load(cacheId, cacheDir);
+
 /** Run the docgen parser and inject the result into the output */
 /** This is used for webpack 4 or earlier */
 function processModule(
@@ -67,6 +76,27 @@ function processModule(
   loaderOptions: Required<LoaderOptions>
 ) {
   if (!webpackModule) {
+    return;
+  }
+
+  const hash = crypto
+    .createHash("sha1")
+    // eslint-disable-next-line
+    // @ts-ignore
+    // eslint-disable-next-line
+    .update(webpackModule._source._value)
+    .digest("hex");
+  const cached = cache.getKey(hash);
+
+  if (cached) {
+    // eslint-disable-next-line
+    // @ts-ignore
+    // eslint-disable-next-line
+    debugInclude(`Got cached docgen for "${webpackModule.request}"`);
+    // eslint-disable-next-line
+    // @ts-ignore
+    // eslint-disable-next-line
+    webpackModule._source._value = cached;
     return;
   }
 
