@@ -13,6 +13,8 @@ try {
   require.resolve("typescript");
   plugin = require("./plugin").default;
 } catch (error) {
+  console.error(error);
+
   plugin = EmptyPlugin as any;
 }
 

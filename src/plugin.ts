@@ -6,7 +6,6 @@ import { matcher } from "micromatch";
 import * as webpack from "webpack";
 
 import { LoaderOptions } from "./types";
-import DocGenDependency from "./dependency";
 import {
   generateDocgenCodeBlock,
   GeneratorOptions,
@@ -130,74 +129,89 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
     const webpackVersion = compiler.webpack.version;
     const isWebpack5 = parseInt(webpackVersion.split(".")[0], 10) >= 5;
 
-    compiler.hooks.compilation.tap(pluginName, (compilation) => {
-      if (isWebpack5) {
-        compilation.dependencyTemplates.set(
+    compiler.hooks.compilation.tap(
+      pluginName,
+      (compilation: webpack.Compilation) => {
+        if (isWebpack5) {
+          // Since this file is needed only for webpack 5, load it only then
+          // to simplify the implementation of the file.
+          //
           // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          DocGenDependency,
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          new DocGenDependency.Template()
-        );
-      }
+          const { DocGenDependency } = require("./dependency");
 
-      compilation.hooks.seal.tap(pluginName, () => {
-        const modulesToProcess: [string, webpack.Module][] = [];
+          compilation.dependencyTemplates.set(
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            DocGenDependency,
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            new DocGenDependency.Template()
+          );
+        }
 
-        // 1. Aggregate modules to process
-        compilation.modules.forEach((module: webpack.Module) => {
-          const nameForCondition = module.nameForCondition() || "";
+        compilation.hooks.seal.tap(pluginName, () => {
+          const modulesToProcess: [string, webpack.Module][] = [];
 
-          if (isExcluded(nameForCondition)) {
-            debugExclude(
-              `Module not matched in "exclude": ${nameForCondition}`
-            );
-            return;
-          }
+          // 1. Aggregate modules to process
+          compilation.modules.forEach((module: webpack.Module) => {
+            const nameForCondition = module.nameForCondition() || "";
 
-          if (!isIncluded(nameForCondition)) {
-            debugExclude(
-              `Module not matched in "include": ${nameForCondition}`
-            );
-            return;
-          }
+            if (isExcluded(nameForCondition)) {
+              debugExclude(
+                `Module not matched in "exclude": ${nameForCondition}`
+              );
+              return;
+            }
 
-          modulesToProcess.push([nameForCondition, module]);
-        });
+            if (!isIncluded(nameForCondition)) {
+              debugExclude(
+                `Module not matched in "include": ${nameForCondition}`
+              );
+              return;
+            }
 
-        // 2. Create a ts program with the modules
-        const tsProgram = ts.createProgram(
-          modulesToProcess.map(([name]) => name),
-          compilerOptions
-        );
+            modulesToProcess.push([nameForCondition, module]);
+          });
 
-        // 3. Process and parse each module and add the type information
-        // as a dependency
-        modulesToProcess.forEach(([name, module]) => {
-          if (isWebpack5) {
-            module.addDependency(
+          // 2. Create a ts program with the modules
+          const tsProgram = ts.createProgram(
+            modulesToProcess.map(([name]) => name),
+            compilerOptions
+          );
+
+          // 3. Process and parse each module and add the type information
+          // as a dependency
+          modulesToProcess.forEach(([name, module]) => {
+            if (isWebpack5) {
+              // Since this file is needed only for webpack 5, load it only then
+              // to simplify the implementation of the file.
+              //
               // eslint-disable-next-line
-              // @ts-ignore: Webpack 4 type
-              new DocGenDependency(
-                generateDocgenCodeBlock({
-                  filename: name,
-                  source: name,
-                  componentDocs: docGenParser.parseWithProgramProvider(
-                    name,
-                    () => tsProgram
-                  ),
-                  ...generateOptions,
-                })
-              )
-            );
-          } else {
-            // Assume webpack 4 or earlier
-            processModule(docGenParser, module, tsProgram, generateOptions);
-          }
+              const { DocGenDependency } = require("./dependency");
+
+              module.addDependency(
+                // eslint-disable-next-line
+                // @ts-ignore: Webpack 4 type
+                new DocGenDependency(
+                  generateDocgenCodeBlock({
+                    filename: name,
+                    source: name,
+                    componentDocs: docGenParser.parseWithProgramProvider(
+                      name,
+                      () => tsProgram
+                    ),
+                    ...generateOptions,
+                  })
+                )
+              );
+            } else {
+              // Assume webpack 4 or earlier
+              processModule(docGenParser, module, tsProgram, generateOptions);
+            }
+          });
         });
-      });
-    });
+      }
+    );
   }
 
   getOptions(): {

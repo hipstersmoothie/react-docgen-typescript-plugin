@@ -15,7 +15,11 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "yarn build --watch",
     "lint": "eslint src --ext .ts,.js",
-    "test": "jest",
+    "test": "npm run test:v4 && npm run test:v5",
+    "pretest:v4": "npm add @types/webpack ts-loader@8 webpack@4 --no-save",
+    "test:v4": "jest",
+    "pretest:v5": "npm add webpack@5 --no-save",
+    "test:v5": "jest",
     "release": "auto shipit"
   },
   "keywords": [
