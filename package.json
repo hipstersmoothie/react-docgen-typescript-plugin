@@ -16,9 +16,9 @@
     "start": "yarn build --watch",
     "lint": "eslint src --ext .ts,.js",
     "test": "npm run test:v4 && npm run test:v5",
-    "pretest:v4": "yarn-add-no-save @types/webpack ts-loader@8 webpack@4",
+    "pretest:v4": "add-no-save @types/webpack ts-loader@8 webpack@4",
     "test:v4": "jest",
-    "pretest:v5": "yarn-add-no-save webpack@5",
+    "pretest:v5": "add-no-save webpack@5",
     "test:v5": "jest",
     "release": "auto shipit"
   },
