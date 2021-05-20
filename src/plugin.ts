@@ -236,7 +236,7 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
                       () => tsProgram
                     ),
                     ...generateOptions,
-                  })
+                  }).substring(name.length)
                 )
               );
             } else {
