@@ -5,7 +5,11 @@ import * as webpack from "webpack";
 // @ts-ignore: What's the right way to refer to this one?
 import makeSerializable from "webpack/lib/util/makeSerializable.js";
 
-class DocGenDependency extends webpack.dependencies.NullDependency {
+// eslint-disable-next-line
+// @ts-ignore: What's the right way to refer to this one?
+import NullDependency from "webpack/lib/dependencies/NullDependency.js";
+
+class DocGenDependency extends NullDependency {
   public codeBlock: string;
 
   constructor(codeBlock: string) {
@@ -27,7 +31,7 @@ makeSerializable(
 type NullDependencyTemplateType = InstanceType<
   typeof webpack.dependencies.NullDependency.Template
 >;
-class DocGenTemplate extends webpack.dependencies.NullDependency.Template
+class DocGenTemplate extends NullDependency.Template
   implements NullDependencyTemplateType {
   // eslint-disable-next-line
   // @ts-ignore: Webpack 4 type
@@ -42,6 +46,7 @@ class DocGenTemplate extends webpack.dependencies.NullDependency.Template
   };
 }
 
+// @ts-ignore TODO: How to type this correctly?
 DocGenDependency.Template = DocGenTemplate;
 
 // Default imports are tricky with CommonJS
