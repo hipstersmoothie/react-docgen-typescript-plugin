@@ -185,6 +185,10 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
 
           // 1. Aggregate modules to process
           compilation.modules.forEach((module: webpack.Module) => {
+            if (!module.nameForCondition) {
+              return;
+            }
+
             const nameForCondition = module.nameForCondition() || "";
 
             if (isExcluded(nameForCondition)) {
