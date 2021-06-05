@@ -1,3 +1,16 @@
+# v1.0.0 (Sat Jun 05 2021)
+
+#### 💥 Breaking Change
+
+- feat - Add support for webpack 5 [#33](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/33) ([@bebraw](https://github.com/bebraw) [@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 2
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+- Juho Vepsäläinen ([@bebraw](https://github.com/bebraw))
+
+---
+
 # v0.7.1 (Tue May 11 2021)
 
 :tada: This release contains work from a new contributor! :tada:
