@@ -18,6 +18,10 @@ class DocGenDependency extends NullDependency {
     this.codeBlock = codeBlock;
   }
 
+  getModuleEvaluationSideEffectsState(): boolean {
+    return false;
+  }
+
   updateHash: webpack.dependencies.NullDependency["updateHash"] = (hash) => {
     hash.update(this.codeBlock);
   };
@@ -46,6 +50,7 @@ class DocGenTemplate extends NullDependency.Template
   };
 }
 
+// eslint-disable-next-line
 // @ts-ignore TODO: How to type this correctly?
 DocGenDependency.Template = DocGenTemplate;
 
