@@ -135,6 +135,12 @@ function processModule(
 
 /** Inject typescript docgen information into modules at the end of a build */
 export default class DocgenPlugin implements webpack.WebpackPluginInstance {
+  public static defaultOptions = {
+    setDisplayName: true,
+    typePropName: "type",
+    docgenCollectionName: "STORYBOOK_REACT_CLASSES",
+  };
+
   private name = "React Docgen Typescript Plugin";
   private options: PluginOptions;
 
@@ -266,6 +272,7 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
       typePropName,
       ...docgenOptions
     } = this.options;
+    const { defaultOptions } = DocgenPlugin;
 
     let compilerOptions = {
       jsx: ts.JsxEmit.React,
@@ -286,9 +293,12 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
     return {
       docgenOptions,
       generateOptions: {
-        docgenCollectionName: docgenCollectionName || "STORYBOOK_REACT_CLASSES",
-        setDisplayName: setDisplayName || true,
-        typePropName: typePropName || "type",
+        docgenCollectionName:
+          docgenCollectionName === undefined
+            ? defaultOptions.docgenCollectionName
+            : docgenCollectionName,
+        setDisplayName: setDisplayName ?? defaultOptions.setDisplayName,
+        typePropName: typePropName ?? defaultOptions.typePropName,
       },
       compilerOptions,
     };
