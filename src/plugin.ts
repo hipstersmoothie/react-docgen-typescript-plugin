@@ -186,7 +186,7 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
           // 1. Aggregate modules to process
           compilation.modules.forEach((module: webpack.Module) => {
             // Ignore already built modules for webpack 5
-            if (isWebpack5 && compilation.builtModules.has(module)) {
+            if (isWebpack5 && !compilation.builtModules.has(module)) {
               // eslint-disable-next-line
               // @ts-ignore: Webpack 4 type
               debugExclude(`Ignoring un-built module: ${module.userRequest}`);
