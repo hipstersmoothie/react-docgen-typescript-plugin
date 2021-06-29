@@ -185,6 +185,39 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
 
           // 1. Aggregate modules to process
           compilation.modules.forEach((module: webpack.Module) => {
+            // Ignore already built modules (webpack 4 only!).
+            // The question is, how to do the same in webpack 5?
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            if (!isWebpack5 && !module.built) {
+              // eslint-disable-next-line
+              // @ts-ignore: Webpack 4 type
+              debugExclude(`Ignoring un-built module: ${module.userRequest}`);
+              return;
+            }
+
+            // Ignore external modules
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            if (module.external) {
+              // eslint-disable-next-line
+              // @ts-ignore: Webpack 4 type
+              debugExclude(`Ignoring external module: ${module.userRequest}`);
+              return;
+            }
+
+            // Ignore raw requests
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            if (!module.rawRequest) {
+              debugExclude(
+                // eslint-disable-next-line
+                // @ts-ignore: Webpack 4 type
+                `Ignoring module without "rawRequest": ${module.userRequest}`
+              );
+              return;
+            }
+
             if (!module.nameForCondition) {
               return;
             }
