@@ -198,6 +198,30 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
 
             const nameForCondition = module.nameForCondition() || "";
 
+            // Ignore already built modules for webpack 5
+            if (!compilation.builtModules.has(module)) {
+              debugExclude(`Ignoring un-built module: ${nameForCondition}`);
+              return;
+            }
+
+            // Ignore external modules
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            if (module.external) {
+              debugExclude(`Ignoring external module: ${nameForCondition}`);
+              return;
+            }
+
+            // Ignore raw requests
+            // eslint-disable-next-line
+            // @ts-ignore: Webpack 4 type
+            if (!module.rawRequest) {
+              debugExclude(
+                `Ignoring module without "rawRequest": ${nameForCondition}`
+              );
+              return;
+            }
+
             if (isExcluded(nameForCondition)) {
               debugExclude(
                 `Module not matched in "exclude": ${nameForCondition}`
