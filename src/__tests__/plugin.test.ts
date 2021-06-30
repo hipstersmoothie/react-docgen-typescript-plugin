@@ -1,6 +1,7 @@
 import webpack, { Configuration } from "webpack";
 import { createFsFromVolume, IFs, Volume } from "memfs";
 import ReactDocgenTypeScriptPlugin from "..";
+import { LoaderOptions } from "../types";
 
 // eslint-disable-next-line
 const joinPath = require("memory-fs/lib/join");
@@ -83,4 +84,35 @@ test("default options", async () => {
   const result = await compile(getConfig({}));
 
   expect(result).toContain("STORYBOOK_REACT_CLASSES");
+});
+
+describe("custom options", () => {
+  describe("loader options", () => {
+    const options: Record<
+      keyof LoaderOptions,
+      Array<LoaderOptions[keyof LoaderOptions]>
+    > = {
+      setDisplayName: [true, false, undefined],
+      typePropName: ["customValue", undefined],
+      docgenCollectionName: ["customValue", null, undefined],
+    };
+    const { defaultOptions } = ReactDocgenTypeScriptPlugin;
+
+    (Object.keys(options) as Array<keyof LoaderOptions>).forEach(
+      (optionName) => {
+        const values = options[optionName];
+
+        test.each(values)(`${optionName}: %p`, (value) => {
+          const plugin = new ReactDocgenTypeScriptPlugin({
+            [optionName]: value,
+          });
+          const { generateOptions: resultOptions } = plugin.getOptions();
+
+          expect(resultOptions[optionName]).toBe(
+            value === undefined ? defaultOptions[optionName] : value
+          );
+        });
+      }
+    );
+  });
 });
