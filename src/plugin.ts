@@ -198,7 +198,7 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
 
             const nameForCondition = module.nameForCondition() || "";
 
-            // Ignore already built modules for webpack 5
+            // Ignore modules that haven't been built yet for webpack 5
             if (!compilation.builtModules.has(module)) {
               debugExclude(`Ignoring un-built module: ${nameForCondition}`);
               return;
