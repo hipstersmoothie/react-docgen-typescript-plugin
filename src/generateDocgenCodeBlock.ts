@@ -131,6 +131,22 @@ function createPropDefinition(
 
   /**
    * ```
+   * SimpleComponent.__docgenInfo.props.someProp.tags = { "tagName": "tagValue" };
+   * ```
+   * @param tags Prop tags.
+   */
+  const setTags = (tags: Record<string, string>) =>
+      ts.createPropertyAssignment(
+        ts.createLiteral("tags"),
+        ts.createObjectLiteral(
+            Object.entries(tags).map(([tagName, tagValue]) =>
+                setStringLiteralField(tagName, tagValue)
+            )
+        )
+      );
+
+  /**
+   * ```
    * SimpleComponent.__docgenInfo.props.someProp.name = "someProp";
    * ```
    * @param name Prop name.
@@ -199,6 +215,7 @@ function createPropDefinition(
     ts.createObjectLiteral([
       setDefaultValue(prop.defaultValue),
       setDescription(prop.description),
+      ...(prop.tags ? [setTags(prop.tags)] : []),
       setName(prop.name),
       setRequired(prop.required),
       setType(prop.type.name, prop.type.value),
@@ -301,6 +318,18 @@ function setComponentDocGen(
             ts.createLiteral("description"),
             ts.createLiteral(d.description)
           ),
+          // SimpleComponent.__docgenInfo.tags
+          ...(d.tags ? [ts.createPropertyAssignment(
+              ts.createLiteral("tags"),
+              ts.createObjectLiteral(
+                  Object.entries<string>(d.tags).map(([tagName, tagValue]) =>
+                      ts.createPropertyAssignment(
+                          ts.createLiteral(tagName),
+                          ts.createLiteral(tagValue)
+                      )
+                  )
+              )
+          )] : []),
           // SimpleComponent.__docgenInfo.displayName
           ts.createPropertyAssignment(
             ts.createLiteral("displayName"),
