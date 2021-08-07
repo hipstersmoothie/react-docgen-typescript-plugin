@@ -58,3 +58,13 @@ it("generates value info for enums", () => {
     )
   ).toMatchSnapshot();
 });
+
+it("generates tag map info for props", () => {
+  expect(
+    generateDocgenCodeBlock(
+      getGeneratorOptions({ shouldIncludePropTagMap: true })(
+        "Tags.tsx"
+      )
+    )
+  ).toMatchSnapshot();
+});

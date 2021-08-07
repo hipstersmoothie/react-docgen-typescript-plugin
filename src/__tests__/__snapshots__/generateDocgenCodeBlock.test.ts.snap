@@ -260,6 +260,36 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
+exports[`generates tag map info for props 1`] = `
+"import * as React from \\"react\\";
+
+interface ComponentWithTaggedProps {
+  /**
+   * Button color.
+   *
+   * @hidden always
+   */
+  color: \\"blue\\" | \\"green\\";
+}
+
+/**
+ * A component with tags.
+ *
+ * @since now
+ */
+export const TaggedComponent: React.FC<ComponentWithTaggedProps> = (props) => (
+  <button style={{ backgroundColor: props.color }}>{props.children}</button>
+);
+
+try {
+    // @ts-ignore
+    TaggedComponent.displayName = \\"TaggedComponent\\";
+    // @ts-ignore
+    TaggedComponent.__docgenInfo = { \\"description\\": \\"A component with tags.\\", \\"tags\\": { \\"since\\": \\"now\\" }, \\"displayName\\": \\"TaggedComponent\\", \\"props\\": { \\"color\\": { \\"defaultValue\\": null, \\"description\\": \\"Button color.\\", \\"tags\\": { \\"hidden\\": \\"always\\" }, \\"name\\": \\"color\\", \\"required\\": true, \\"type\\": { \\"name\\": \\"\\\\\\"blue\\\\\\" | \\\\\\"green\\\\\\"\\" } } } };
+}
+catch (__react_docgen_typescript_loader_error) { }"
+`;
+
 exports[`generates value info for enums 1`] = `
 "import * as React from \\"react\\";
 
