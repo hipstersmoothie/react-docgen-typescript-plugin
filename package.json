@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "A webpack plugin to inject react typescript docgen information.",
   "license": "MIT",
-  "repository": "hipstersmoothie/react-docgen-typescript-plugin",
+  "repository": "storybookjs/react-docgen-typescript-plugin",
   "author": "Andrew Lisowski <lisowski54@gmail.com>",
   "main": "dist/index.js",
   "publishConfig": {
