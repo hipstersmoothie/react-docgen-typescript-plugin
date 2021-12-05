@@ -93,7 +93,7 @@ try {
     // @ts-ignore
     MyButtonDisplayName.displayName = \\"MyButtonDisplayName\\";
     // @ts-ignore
-    MyButtonDisplayName.__docgenInfo = { \\"description\\": \\"\\", \\"displayName\\": \\"MyButtonDisplayName\\", \\"props\\": { \\"text\\": { \\"defaultValue\\": null, \\"description\\": \\"\\", \\"name\\": \\"text\\", \\"required\\": true, \\"type\\": { \\"name\\": \\"string\\" } } } };
+    Button.__docgenInfo = { \\"description\\": \\"\\", \\"displayName\\": \\"MyButtonDisplayName\\", \\"props\\": { \\"text\\": { \\"defaultValue\\": null, \\"description\\": \\"\\", \\"name\\": \\"text\\", \\"required\\": true, \\"type\\": { \\"name\\": \\"string\\" } } } };
 }
 catch (__react_docgen_typescript_loader_error) { }"
 `;

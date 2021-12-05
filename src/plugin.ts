@@ -405,7 +405,10 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
     }
 
     return {
-      docgenOptions,
+      docgenOptions: {
+        shouldIncludeExpression: true,
+        ...docgenOptions,
+      },
       generateOptions: {
         docgenCollectionName:
           docgenCollectionName === undefined
