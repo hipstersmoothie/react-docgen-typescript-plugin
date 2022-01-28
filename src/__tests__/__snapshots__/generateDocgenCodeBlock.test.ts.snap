@@ -209,6 +209,35 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
+exports[`component fixture SubComponent.tsx has code block generated 1`] = `
+"import * as React from \\"react\\";
+
+export default function Root(props: { name: string }) {
+  return <span>root {props.name}</span>;
+}
+
+function Sub(props: { name: string }) {
+  return <span>sub {props.name}</span>;
+}
+
+Root.Sub = Sub;
+
+try {
+    // @ts-ignore
+    SubComponent.displayName = \\"SubComponent\\";
+    // @ts-ignore
+    SubComponent.__docgenInfo = { \\"description\\": \\"\\", \\"displayName\\": \\"SubComponent\\", \\"props\\": { \\"name\\": { \\"defaultValue\\": null, \\"description\\": \\"\\", \\"name\\": \\"name\\", \\"required\\": true, \\"type\\": { \\"name\\": \\"string\\" } } } };
+}
+catch (__react_docgen_typescript_loader_error) { }
+try {
+    // @ts-ignore
+    default.Sub.displayName = \\"default.Sub\\";
+    // @ts-ignore
+    default.Sub.__docgenInfo = { \\"description\\": \\"\\", \\"displayName\\": \\"default.Sub\\", \\"props\\": { \\"name\\": { \\"defaultValue\\": null, \\"description\\": \\"\\", \\"name\\": \\"name\\", \\"required\\": true, \\"type\\": { \\"name\\": \\"string\\" } } } };
+}
+catch (__react_docgen_typescript_loader_error) { }"
+`;
+
 exports[`component fixture TextOnlyComponent.tsx has code block generated 1`] = `
 "import * as React from \\"react\\";
 
