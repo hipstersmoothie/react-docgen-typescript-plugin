@@ -1,3 +1,15 @@
+# v1.0.1 (Mon Mar 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: respect falsy custom options [#49](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/49) ([@zhzz](https://github.com/zhzz))
+
+#### Authors: 1
+
+- Egor Pogadaev ([@zhzz](https://github.com/zhzz))
+
+---
+
 # v1.0.0 (Sat Jun 05 2021)
 
 #### 💥 Breaking Change
