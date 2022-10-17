@@ -46,7 +46,7 @@ class DocGenTemplate extends NullDependency.Template
   };
 }
 
-// @ts-ignore TODO: How to type this correctly?
+// @ts-expect-error TODO: How to type this correctly?
 DocGenDependency.Template = DocGenTemplate;
 
 // Default imports are tricky with CommonJS

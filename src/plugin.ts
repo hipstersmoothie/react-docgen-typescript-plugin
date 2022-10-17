@@ -91,7 +91,6 @@ function processModule(
   if (cached) {
     // eslint-disable-next-line
     // @ts-ignore
-    // eslint-disable-next-line
     debugInclude(`Got cached docgen for "${webpackModule.request}"`);
     // eslint-disable-next-line
     // @ts-ignore
