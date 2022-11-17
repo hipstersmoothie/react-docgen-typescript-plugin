@@ -1,9 +1,9 @@
 {
-  "name": "react-docgen-typescript-plugin",
-  "version": "1.0.0",
+  "name": "@storybook/react-docgen-typescript-plugin",
+  "version": "1.0.1",
   "description": "A webpack plugin to inject react typescript docgen information.",
   "license": "MIT",
-  "repository": "hipstersmoothie/react-docgen-typescript-plugin",
+  "repository": "storybookjs/react-docgen-typescript-plugin",
   "author": "Andrew Lisowski <lisowski54@gmail.com>",
   "main": "dist/index.js",
   "publishConfig": {
@@ -38,7 +38,7 @@
     "find-cache-dir": "^3.3.1",
     "flat-cache": "^3.0.4",
     "micromatch": "^4.0.2",
-    "react-docgen-typescript": "^1.22.0",
+    "react-docgen-typescript": "^2.1.1",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
