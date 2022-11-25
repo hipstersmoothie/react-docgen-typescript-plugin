@@ -44,14 +44,14 @@ function insertTsIgnoreBeforeStatement(statement: ts.Statement): ts.Statement {
  */
 function setDisplayName(d: ComponentDoc): ts.Statement {
   return insertTsIgnoreBeforeStatement(
-    ts.createExpressionStatement(
-      ts.createBinary(
-        ts.createPropertyAccess(
-          ts.createIdentifier(d.displayName),
-          ts.createIdentifier("displayName")
+    ts.factory.createExpressionStatement(
+      ts.factory.createBinaryExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(d.displayName),
+          ts.factory.createIdentifier("displayName")
         ),
         ts.SyntaxKind.EqualsToken,
-        ts.createLiteral(d.displayName)
+        ts.factory.createStringLiteral(d.displayName)
       )
     )
   );
@@ -93,8 +93,8 @@ function createPropDefinition(
   const setDefaultValue = (
     defaultValue: { value: string | number | boolean } | null
   ) =>
-    ts.createPropertyAssignment(
-      ts.createLiteral("defaultValue"),
+    ts.factory.createPropertyAssignment(
+      ts.factory.createStringLiteral("defaultValue"),
       // Use a more extensive check on defaultValue. Sometimes the parser
       // returns an empty object.
       defaultValue !== null &&
@@ -104,20 +104,28 @@ function createPropDefinition(
         (typeof defaultValue.value === "string" ||
           typeof defaultValue.value === "number" ||
           typeof defaultValue.value === "boolean")
-        ? ts.createObjectLiteral([
-            ts.createPropertyAssignment(
-              ts.createIdentifier("value"),
-              ts.createLiteral(defaultValue.value)
+        ? ts.factory.createObjectLiteralExpression([
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier("value"),
+              // eslint-disable-next-line no-nested-ternary
+              typeof defaultValue.value === "string"
+                ? ts.factory.createStringLiteral(defaultValue.value)
+                : // eslint-disable-next-line no-nested-ternary
+                typeof defaultValue.value === "number"
+                ? ts.factory.createNumericLiteral(defaultValue.value)
+                : defaultValue.value
+                ? ts.factory.createTrue()
+                : ts.factory.createFalse()
             ),
           ])
-        : ts.createNull()
+        : ts.factory.createNull()
     );
 
   /** Set a property with a string value */
   const setStringLiteralField = (fieldName: string, fieldValue: string) =>
-    ts.createPropertyAssignment(
-      ts.createLiteral(fieldName),
-      ts.createLiteral(fieldValue)
+    ts.factory.createPropertyAssignment(
+      ts.factory.createStringLiteral(fieldName),
+      ts.factory.createStringLiteral(fieldValue)
     );
 
   /**
@@ -144,9 +152,9 @@ function createPropDefinition(
    * @param required Whether prop is required or not.
    */
   const setRequired = (required: boolean) =>
-    ts.createPropertyAssignment(
-      ts.createLiteral("required"),
-      required ? ts.createTrue() : ts.createFalse()
+    ts.factory.createPropertyAssignment(
+      ts.factory.createStringLiteral("required"),
+      required ? ts.factory.createTrue() : ts.factory.createFalse()
     );
 
   /**
@@ -161,11 +169,11 @@ function createPropDefinition(
   const setValue = (typeValue?: any[]) =>
     Array.isArray(typeValue) &&
     typeValue.every((value) => typeof value.value === "string")
-      ? ts.createPropertyAssignment(
-          ts.createLiteral("value"),
-          ts.createArrayLiteral(
+      ? ts.factory.createPropertyAssignment(
+          ts.factory.createStringLiteral("value"),
+          ts.factory.createArrayLiteralExpression(
             typeValue.map((value) =>
-              ts.createObjectLiteral([
+              ts.factory.createObjectLiteralExpression([
                 setStringLiteralField("value", value.value),
               ])
             )
@@ -188,15 +196,15 @@ function createPropDefinition(
       objectFields.push(valueField);
     }
 
-    return ts.createPropertyAssignment(
-      ts.createLiteral(options.typePropName),
-      ts.createObjectLiteral(objectFields)
+    return ts.factory.createPropertyAssignment(
+      ts.factory.createStringLiteral(options.typePropName),
+      ts.factory.createObjectLiteralExpression(objectFields)
     );
   };
 
-  return ts.createPropertyAssignment(
-    ts.createLiteral(propName),
-    ts.createObjectLiteral([
+  return ts.factory.createPropertyAssignment(
+    ts.factory.createStringLiteral(propName),
+    ts.factory.createObjectLiteralExpression([
       setDefaultValue(prop.defaultValue),
       setDescription(prop.description),
       setName(prop.name),
@@ -229,35 +237,35 @@ function insertDocgenIntoGlobalCollection(
   relativeFilename: string
 ): ts.Statement {
   return insertTsIgnoreBeforeStatement(
-    ts.createIf(
-      ts.createBinary(
-        ts.createTypeOf(ts.createIdentifier(docgenCollectionName)),
+    ts.factory.createIfStatement(
+      ts.factory.createBinaryExpression(
+        ts.factory.createTypeOfExpression(ts.factory.createIdentifier(docgenCollectionName)),
         ts.SyntaxKind.ExclamationEqualsEqualsToken,
-        ts.createLiteral("undefined")
+        ts.factory.createStringLiteral("undefined")
       ),
       insertTsIgnoreBeforeStatement(
-        ts.createStatement(
-          ts.createBinary(
-            ts.createElementAccess(
-              ts.createIdentifier(docgenCollectionName),
-              ts.createLiteral(`${relativeFilename}#${d.displayName}`)
+        ts.factory.createExpressionStatement(
+          ts.factory.createBinaryExpression(
+            ts.factory.createElementAccessExpression(
+              ts.factory.createIdentifier(docgenCollectionName),
+              ts.factory.createStringLiteral(`${relativeFilename}#${d.displayName}`)
             ),
             ts.SyntaxKind.EqualsToken,
-            ts.createObjectLiteral([
-              ts.createPropertyAssignment(
-                ts.createIdentifier("docgenInfo"),
-                ts.createPropertyAccess(
-                  ts.createIdentifier(d.displayName),
-                  ts.createIdentifier("__docgenInfo")
+            ts.factory.createObjectLiteralExpression([
+              ts.factory.createPropertyAssignment(
+                ts.factory.createIdentifier("docgenInfo"),
+                ts.factory.createPropertyAccessExpression(
+                  ts.factory.createIdentifier(d.displayName),
+                  ts.factory.createIdentifier("__docgenInfo")
                 )
               ),
-              ts.createPropertyAssignment(
-                ts.createIdentifier("name"),
-                ts.createLiteral(d.displayName)
+              ts.factory.createPropertyAssignment(
+                ts.factory.createIdentifier("name"),
+                ts.factory.createStringLiteral(d.displayName)
               ),
-              ts.createPropertyAssignment(
-                ts.createIdentifier("path"),
-                ts.createLiteral(`${relativeFilename}#${d.displayName}`)
+              ts.factory.createPropertyAssignment(
+                ts.factory.createIdentifier("path"),
+                ts.factory.createStringLiteral(`${relativeFilename}#${d.displayName}`)
               ),
             ])
           )
@@ -287,29 +295,29 @@ function setComponentDocGen(
   options: GeneratorOptions
 ): ts.Statement {
   return insertTsIgnoreBeforeStatement(
-    ts.createStatement(
-      ts.createBinary(
+    ts.factory.createExpressionStatement(
+      ts.factory.createBinaryExpression(
         // SimpleComponent.__docgenInfo
-        ts.createPropertyAccess(
-          ts.createIdentifier(d.displayName),
-          ts.createIdentifier("__docgenInfo")
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(d.displayName),
+          ts.factory.createIdentifier("__docgenInfo")
         ),
         ts.SyntaxKind.EqualsToken,
-        ts.createObjectLiteral([
+        ts.factory.createObjectLiteralExpression([
           // SimpleComponent.__docgenInfo.description
-          ts.createPropertyAssignment(
-            ts.createLiteral("description"),
-            ts.createLiteral(d.description)
+          ts.factory.createPropertyAssignment(
+            ts.factory.createStringLiteral("description"),
+            ts.factory.createStringLiteral(d.description)
           ),
           // SimpleComponent.__docgenInfo.displayName
-          ts.createPropertyAssignment(
-            ts.createLiteral("displayName"),
-            ts.createLiteral(d.displayName)
+          ts.factory.createPropertyAssignment(
+            ts.factory.createStringLiteral("displayName"),
+            ts.factory.createStringLiteral(d.displayName)
           ),
           // SimpleComponent.__docgenInfo.props
-          ts.createPropertyAssignment(
-            ts.createLiteral("props"),
-            ts.createObjectLiteral(
+          ts.factory.createPropertyAssignment(
+            ts.factory.createStringLiteral("props"),
+            ts.factory.createObjectLiteralExpression(
               Object.entries(d.props).map(([propName, prop]) =>
                 createPropDefinition(propName, prop, options)
               )
@@ -333,13 +341,13 @@ export function generateDocgenCodeBlock(options: GeneratorOptions): string {
     .replace(/\\/g, "/");
 
   const wrapInTryStatement = (statements: ts.Statement[]): ts.TryStatement =>
-    ts.createTry(
-      ts.createBlock(statements, true),
-      ts.createCatchClause(
-        ts.createVariableDeclaration(
-          ts.createIdentifier("__react_docgen_typescript_loader_error")
+    ts.factory.createTryStatement(
+      ts.factory.createBlock(statements, true),
+      ts.factory.createCatchClause(
+        ts.factory.createVariableDeclaration(
+          ts.factory.createIdentifier("__react_docgen_typescript_loader_error")
         ),
-        ts.createBlock([])
+        ts.factory.createBlock([])
       ),
       undefined
     );
