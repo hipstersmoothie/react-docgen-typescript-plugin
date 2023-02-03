@@ -1,3 +1,31 @@
+# v1.0.2 (Mon Oct 17 2022)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, Anton Savoskin ([@sairus2k](https://github.com/sairus2k)), for all your work!
+
+#### 🐛 Bug Fix
+
+- Update typescript and fix deprecation warnings [#70](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/70) (a.savoskin@kvarta.ru)
+
+#### Authors: 1
+
+- Anton Savoskin ([@sairus2k](https://github.com/sairus2k))
+
+---
+
+# v1.0.1 (Mon Mar 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: respect falsy custom options [#49](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/49) ([@zhzz](https://github.com/zhzz))
+
+#### Authors: 1
+
+- Egor Pogadaev ([@zhzz](https://github.com/zhzz))
+
+---
+
 # v1.0.0 (Sat Jun 05 2021)
 
 #### 💥 Breaking Change
