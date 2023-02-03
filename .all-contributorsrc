@@ -51,7 +51,8 @@
       "contributions": [
         "infra",
         "test",
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
