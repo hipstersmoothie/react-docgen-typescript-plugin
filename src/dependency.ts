@@ -9,6 +9,9 @@ import makeSerializable from "webpack/lib/util/makeSerializable.js";
 // @ts-ignore: What's the right way to refer to this one?
 import NullDependency from "webpack/lib/dependencies/NullDependency.js";
 
+// This won't be needed when only webpack 5+ can be supported. Patching for now.
+type Context = { write: (a: string) => void; read: () => string };
+
 class DocGenDependency extends NullDependency {
   public codeBlock: string;
 
@@ -18,9 +21,27 @@ class DocGenDependency extends NullDependency {
     this.codeBlock = codeBlock;
   }
 
+  get type(): string {
+    return "docgen";
+  }
+
+  getModuleEvaluationSideEffectsState(): boolean {
+    return false;
+  }
+
   updateHash: webpack.dependencies.NullDependency["updateHash"] = (hash) => {
     hash.update(this.codeBlock);
   };
+
+  serialize(context: Context): void {
+    const { write } = context;
+    write(this.codeBlock);
+  }
+
+  deserialize(context: Context): void {
+    const { read } = context;
+    this.codeBlock = read();
+  }
 }
 
 makeSerializable(
@@ -46,6 +67,8 @@ class DocGenTemplate extends NullDependency.Template
   };
 }
 
+// eslint-disable-next-line
+// @ts-ignore TODO: How to type this correctly?
 // @ts-expect-error TODO: How to type this correctly?
 DocGenDependency.Template = DocGenTemplate;
 
