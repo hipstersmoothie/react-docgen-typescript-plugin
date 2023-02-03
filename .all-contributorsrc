@@ -53,6 +53,25 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "zhzz",
+      "name": "Egor Pogadaev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4607770?v=4",
+      "profile": "https://github.com/zhzz",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    },
+    {
+      "login": "sairus2k",
+      "name": "Anton Savoskin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1106887?v=4",
+      "profile": "https://github.com/sairus2k",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7

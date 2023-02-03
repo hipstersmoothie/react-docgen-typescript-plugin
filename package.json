@@ -1,6 +1,6 @@
 {
   "name": "react-docgen-typescript-plugin",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A webpack plugin to inject react typescript docgen information.",
   "license": "MIT",
   "repository": "hipstersmoothie/react-docgen-typescript-plugin",
@@ -38,7 +38,7 @@
     "find-cache-dir": "^3.3.1",
     "flat-cache": "^3.0.4",
     "micromatch": "^4.0.2",
-    "react-docgen-typescript": "^1.22.0",
+    "react-docgen-typescript": "^2.2.2",
     "tslib": "^2.0.0",
     "webpack-sources": "^2.2.0"
   },
@@ -71,13 +71,13 @@
     "react": "^17.0.1",
     "ts-jest": "^26.5.6",
     "ts-loader": "^9.1.2",
-    "typescript": "3.8.3",
+    "typescript": "4.8.3",
     "webpack": "^5.36.2",
     "webpack-cli": "^4.7.0",
     "yarn-add-no-save": "^1.0.3"
   },
   "peerDependencies": {
-    "typescript": ">= 3.x",
+    "typescript": ">= 4.x",
     "webpack": ">= 4"
   },
   "lint-staged": {
