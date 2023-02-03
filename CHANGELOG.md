@@ -1,3 +1,16 @@
+# v1.0.3 (Fri Feb 03 2023)
+
+#### 🐛 Bug Fix
+
+- fix - Fix webpack 4 hmr after refresh + fix rebuild performance + fix webpack 5 serialization [#45](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/45) ([@bebraw](https://github.com/bebraw) [@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 2
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+- Juho Vepsäläinen ([@bebraw](https://github.com/bebraw))
+
+---
+
 # v1.0.2 (Mon Oct 17 2022)
 
 :tada: This release contains work from a new contributor! :tada:
