@@ -68,7 +68,6 @@ class DocGenTemplate extends NullDependency.Template
 }
 
 // eslint-disable-next-line
-// @ts-ignore TODO: How to type this correctly?
 // @ts-expect-error TODO: How to type this correctly?
 DocGenDependency.Template = DocGenTemplate;
 
