@@ -1,3 +1,16 @@
+# v1.0.4 (Fri Feb 03 2023)
+
+#### 🐛 Bug Fix
+
+- fix: Add missing getModuleEvaluationSideEffectsState [#46](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/46) ([@bebraw](https://github.com/bebraw) [@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 2
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+- Juho Vepsäläinen ([@bebraw](https://github.com/bebraw))
+
+---
+
 # v1.0.3 (Fri Feb 03 2023)
 
 #### 🐛 Bug Fix
