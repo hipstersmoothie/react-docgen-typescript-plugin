@@ -1,3 +1,15 @@
+# v1.0.5 (Sun Feb 05 2023)
+
+#### 🐛 Bug Fix
+
+- Use component expression name as identifier [#58](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/58) ([@TrevorBurnham](https://github.com/TrevorBurnham))
+
+#### Authors: 1
+
+- Trevor Burnham ([@TrevorBurnham](https://github.com/TrevorBurnham))
+
+---
+
 # v1.0.4 (Fri Feb 03 2023)
 
 #### 🐛 Bug Fix
