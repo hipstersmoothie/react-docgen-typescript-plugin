@@ -73,6 +73,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "TrevorBurnham",
+      "name": "Trevor Burnham",
+      "avatar_url": "https://avatars.githubusercontent.com/u/224895?v=4",
+      "profile": "http://trevorburnham.com/",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
