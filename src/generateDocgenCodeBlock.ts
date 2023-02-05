@@ -305,7 +305,7 @@ function setComponentDocGen(
       ts.factory.createBinaryExpression(
         // SimpleComponent.__docgenInfo
         ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier(d.displayName),
+          ts.factory.createIdentifier(d.expression?.getName() || d.displayName),
           ts.factory.createIdentifier("__docgenInfo")
         ),
         ts.SyntaxKind.EqualsToken,

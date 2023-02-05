@@ -6,7 +6,9 @@ import {
   GeneratorOptions,
 } from "../generateDocgenCodeBlock";
 
-function getGeneratorOptions(parserOptions: ParserOptions = {}) {
+const defaultParserOptions = { shouldIncludeExpression: true };
+
+function getGeneratorOptions(parserOptions: ParserOptions) {
   return (filename: string) => {
     const filePath = path.resolve(__dirname, "__fixtures__", filename);
 
@@ -24,7 +26,7 @@ function getGeneratorOptions(parserOptions: ParserOptions = {}) {
 function loadFixtureTests(): GeneratorOptions[] {
   return fs
     .readdirSync(path.resolve(__dirname, "__fixtures__"))
-    .map(getGeneratorOptions());
+    .map(getGeneratorOptions(defaultParserOptions));
 }
 
 const fixtureTests: GeneratorOptions[] = loadFixtureTests();
@@ -52,9 +54,10 @@ it("adds component to docgen collection", () => {
 it("generates value info for enums", () => {
   expect(
     generateDocgenCodeBlock(
-      getGeneratorOptions({ shouldExtractLiteralValuesFromEnum: true })(
-        "DefaultPropValue.tsx"
-      )
+      getGeneratorOptions({
+        ...defaultParserOptions,
+        shouldExtractLiteralValuesFromEnum: true,
+      })("DefaultPropValue.tsx")
     )
   ).toMatchSnapshot();
 });
