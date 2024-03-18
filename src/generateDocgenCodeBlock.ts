@@ -78,6 +78,17 @@ function createPropDefinition(
   prop: PropItem,
   options: GeneratorOptions
 ) {
+   const createNumericDefaultValue = (value: number) => {
+       if (value < 0) {
+           return ts.factory.createPrefixUnaryExpression(
+               ts.SyntaxKind.MinusToken,
+               ts.factory.createNumericLiteral(-value),
+           );
+       }
+
+       return ts.factory.createNumericLiteral(value);
+   };
+
   /**
    * Set default prop value.
    *
@@ -112,7 +123,7 @@ function createPropDefinition(
                 ? ts.factory.createStringLiteral(defaultValue.value)
                 : // eslint-disable-next-line no-nested-ternary
                 typeof defaultValue.value === "number"
-                ? ts.factory.createNumericLiteral(defaultValue.value)
+                ? createNumericDefaultValue(defaultValue.value)
                 : defaultValue.value
                 ? ts.factory.createTrue()
                 : ts.factory.createFalse()
