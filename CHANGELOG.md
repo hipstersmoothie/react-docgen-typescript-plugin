@@ -1,3 +1,24 @@
+# v1.0.6 (Tue Mar 26 2024)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, Maxime Meriouma-Caron ([@meriouma](https://github.com/meriouma)), for all your work!
+
+#### 🐛 Bug Fix
+
+- fix: number default value cannot be negative with Typescript 5.4 [#88](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/88) ([@meriouma](https://github.com/meriouma) [@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### ⚠️ Pushed to `master`
+
+- upgrade node ([@hipstersmoothie](https://github.com/hipstersmoothie))
+
+#### Authors: 2
+
+- Andrew Lisowski ([@hipstersmoothie](https://github.com/hipstersmoothie))
+- Maxime Meriouma-Caron ([@meriouma](https://github.com/meriouma))
+
+---
+
 # v1.0.5 (Sun Feb 05 2023)
 
 #### 🐛 Bug Fix
