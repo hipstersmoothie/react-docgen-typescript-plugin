@@ -34,6 +34,10 @@ function compile(config: Configuration): Promise<string> {
     );
     const memfs = compiler.outputFileSystem;
 
+    if (!memfs) {
+      throw new Error("memfs is undefined");
+    }
+
     compiler.run((error, stats) => {
       if (error) {
         return reject(error);

@@ -4,7 +4,6 @@
     "xo",
     "prettier",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
     "plugin:jest/recommended",
     "plugin:jest/style"
   ],
@@ -20,6 +19,7 @@
   },
   "rules": {
     "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/camelcase": 0,
     "complexity": 0,
     "import/no-unresolved": 0,

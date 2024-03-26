@@ -1,5 +1,7 @@
+.idea
 node_modules
 dist
 example-dist
 coverage
 .env
+yarn-error.log

@@ -17,6 +17,8 @@ interface DefaultPropValueComponentProps {
    * Button disabled.
    */
   disabled: boolean;
+
+  tabIndex: number;
 }
 
 /**
@@ -34,4 +36,5 @@ export const DefaultPropValueComponent: React.FC<DefaultPropValueComponentProps>
 DefaultPropValueComponent.defaultProps = {
   counter: 123,
   disabled: false,
+  tabIndex: -1,
 };
