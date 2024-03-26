@@ -86,6 +86,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/sairus2k"><img src="https://avatars.githubusercontent.com/u/1106887?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Anton Savoskin</b></sub></a><br /><a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=sairus2k" title="Code">💻</a></td>
     <td align="center"><a href="http://trevorburnham.com/"><img src="https://avatars.githubusercontent.com/u/224895?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Trevor Burnham</b></sub></a><br /><a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=TrevorBurnham" title="Tests">⚠️</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=TrevorBurnham" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/meriouma"><img src="https://avatars.githubusercontent.com/u/1082552?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Maxime Meriouma-Caron</b></sub></a><br /><a href="#infra-meriouma" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=meriouma" title="Tests">⚠️</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=meriouma" title="Code">💻</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->

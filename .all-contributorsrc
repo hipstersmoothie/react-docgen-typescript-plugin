@@ -83,6 +83,17 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "meriouma",
+      "name": "Maxime Meriouma-Caron",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1082552?v=4",
+      "profile": "https://github.com/meriouma",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
