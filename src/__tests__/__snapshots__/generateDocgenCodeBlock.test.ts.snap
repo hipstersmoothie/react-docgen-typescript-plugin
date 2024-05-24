@@ -28,6 +28,30 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
+exports[`adds component with display name to docgen collection 1`] = `
+"import * as React from "react";
+
+interface ButtonComponentProps {
+  text: string;
+}
+
+export const Button = (props: ButtonComponentProps) => (
+  <button>{props.text}</button>
+);
+
+Button.displayName = "MyButtonDisplayName";
+
+try {
+    // @ts-ignore
+    Button.__docgenInfo = { "description": "", "displayName": "MyButtonDisplayName", "props": { "text": { "defaultValue": null, "description": "", "name": "text", "required": true, "type": { "name": "string" } } } };
+    // @ts-ignore
+    if (typeof STORYBOOK_REACT_CLASSES !== "undefined")
+        // @ts-ignore
+        STORYBOOK_REACT_CLASSES["DisplayName.tsx#MyButtonDisplayName"] = { docgenInfo: Button.__docgenInfo, name: "MyButtonDisplayName", path: "DisplayName.tsx#MyButtonDisplayName" };
+}
+catch (__react_docgen_typescript_loader_error) { }"
+`;
+
 exports[`component fixture DefaultPropValue.tsx has code block generated 1`] = `
 "import * as React from "react";
 
@@ -93,8 +117,6 @@ export const Button = (props: ButtonComponentProps) => (
 Button.displayName = "MyButtonDisplayName";
 
 try {
-    // @ts-ignore
-    MyButtonDisplayName.displayName = "MyButtonDisplayName";
     // @ts-ignore
     Button.__docgenInfo = { "description": "", "displayName": "MyButtonDisplayName", "props": { "text": { "defaultValue": null, "description": "", "name": "text", "required": true, "type": { "name": "string" } } } };
 }

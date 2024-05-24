@@ -12,6 +12,16 @@ export interface GeneratorOptions {
 }
 
 /**
+ * Gets the identifier name for the component.
+ * 
+ * If the component has a displayName that differs from its
+ * identifier, this will return the identifier.
+ */
+function getComponentIdentifier(d: ComponentDoc): string {
+  return d.expression?.getName() || d.displayName
+}
+
+/**
  * Inserts a ts-ignore comment above the supplied statement.
  *
  * It is used to work around type errors related to fields like __docgenInfo not
@@ -42,12 +52,18 @@ function insertTsIgnoreBeforeStatement(statement: ts.Statement): ts.Statement {
  * SimpleComponent.displayName = "SimpleComponent";
  * ```
  */
-function setDisplayName(d: ComponentDoc): ts.Statement {
+function setDisplayName(d: ComponentDoc): ts.Statement | null {
+  // If the expression name doesn't match the display name,
+  // then we know the component has already set a displayName
+  if (d.expression && d.expression.getName() !== d.displayName) {
+    return null
+  }
+
   return insertTsIgnoreBeforeStatement(
     ts.factory.createExpressionStatement(
       ts.factory.createBinaryExpression(
         ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier(d.displayName),
+          ts.factory.createIdentifier(getComponentIdentifier(d)),
           ts.factory.createIdentifier("displayName")
         ),
         ts.SyntaxKind.EqualsToken,
@@ -270,7 +286,7 @@ function insertDocgenIntoGlobalCollection(
               ts.factory.createPropertyAssignment(
                 ts.factory.createIdentifier("docgenInfo"),
                 ts.factory.createPropertyAccessExpression(
-                  ts.factory.createIdentifier(d.displayName),
+                  ts.factory.createIdentifier(getComponentIdentifier(d)),
                   ts.factory.createIdentifier("__docgenInfo")
                 )
               ),
@@ -316,7 +332,7 @@ function setComponentDocGen(
       ts.factory.createBinaryExpression(
         // SimpleComponent.__docgenInfo
         ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier(d.expression?.getName() || d.displayName),
+          ts.factory.createIdentifier(getComponentIdentifier(d)),
           ts.factory.createIdentifier("__docgenInfo")
         ),
         ts.SyntaxKind.EqualsToken,
