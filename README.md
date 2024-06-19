@@ -88,6 +88,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/meriouma"><img src="https://avatars.githubusercontent.com/u/1082552?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Maxime Meriouma-Caron</b></sub></a><br /><a href="#infra-meriouma" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=meriouma" title="Tests">⚠️</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=meriouma" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/askoufis"><img src="https://avatars.githubusercontent.com/u/5663042?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adam Skoufis</b></sub></a><br /><a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=askoufis" title="Code">💻</a></td>
   </tr>
 </table>
 
