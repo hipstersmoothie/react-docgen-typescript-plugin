@@ -30,9 +30,8 @@ function loadFixtureTests(): GeneratorOptions[] {
 }
 
 const fixtureTests: GeneratorOptions[] = loadFixtureTests();
-const simpleFixture = fixtureTests.find(
-  (f) => f.filename === "Simple.tsx"
-) as GeneratorOptions;
+const simpleFixture = fixtureTests.find((f) => f.filename === "Simple.tsx")!
+const displayNameFixture = fixtureTests.find((f) => f.filename === "DisplayName.tsx")!
 
 describe("component fixture", () => {
   fixtureTests.forEach((generatorOptions) => {
@@ -46,6 +45,15 @@ it("adds component to docgen collection", () => {
   expect(
     generateDocgenCodeBlock({
       ...simpleFixture,
+      docgenCollectionName: "STORYBOOK_REACT_CLASSES",
+    })
+  ).toMatchSnapshot();
+});
+
+it("adds component with display name to docgen collection", () => {
+  expect(
+    generateDocgenCodeBlock({
+      ...displayNameFixture,
       docgenCollectionName: "STORYBOOK_REACT_CLASSES",
     })
   ).toMatchSnapshot();
