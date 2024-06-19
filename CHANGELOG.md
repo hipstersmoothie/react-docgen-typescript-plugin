@@ -1,3 +1,19 @@
+# v1.0.8 (Wed Jun 19 2024)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, Nicholas Narsing ([@soren121](https://github.com/soren121)), for all your work!
+
+#### 🐛 Bug Fix
+
+- fix: use correct component identifier throughout docblock [#92](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/92) ([@soren121](https://github.com/soren121))
+
+#### Authors: 1
+
+- Nicholas Narsing ([@soren121](https://github.com/soren121))
+
+---
+
 # v1.0.7 (Wed Jun 19 2024)
 
 :tada: This release contains work from a new contributor! :tada:
