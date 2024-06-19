@@ -1,3 +1,19 @@
+# v1.0.7 (Wed Jun 19 2024)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, Adam Skoufis ([@askoufis](https://github.com/askoufis)), for all your work!
+
+#### 🐛 Bug Fix
+
+- fix: Remove unused `endent` dependency [#89](https://github.com/hipstersmoothie/react-docgen-typescript-plugin/pull/89) ([@askoufis](https://github.com/askoufis))
+
+#### Authors: 1
+
+- Adam Skoufis ([@askoufis](https://github.com/askoufis))
+
+---
+
 # v1.0.6 (Tue Mar 26 2024)
 
 :tada: This release contains work from a new contributor! :tada:
