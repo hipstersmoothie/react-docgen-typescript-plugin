@@ -103,6 +103,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "soren121",
+      "name": "Nicholas Narsing",
+      "avatar_url": "https://avatars.githubusercontent.com/u/295939?v=4",
+      "profile": "https://sorenstudios.com/",
+      "contributions": [
+        "doc",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
