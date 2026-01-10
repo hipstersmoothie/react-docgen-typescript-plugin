@@ -1,13 +1,13 @@
-import * as React from "react";
+import type { FC, PropsWithChildren } from 'react';
 
 interface SimpleComponentProps {
   /** Button color. */
-  color: "blue" | "green";
+  color: 'blue' | 'green';
 }
 
 /**
  * A simple component.
  */
-export const SimpleComponent: React.FC<SimpleComponentProps> = (props) => (
+export const SimpleComponent: FC<PropsWithChildren<SimpleComponentProps>> = (props) => (
   <button style={{ backgroundColor: props.color }}>{props.children}</button>
 );

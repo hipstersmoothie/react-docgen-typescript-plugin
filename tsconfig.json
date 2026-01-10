@@ -1,23 +1,21 @@
 {
-  "include": ["src/**/*", "typings/**/*"],
+  "include": ["src/**/*", "typings/**/*", "vitest.config.ts", "eslint.config.ts", "prettier.config.mjs"],
 
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "lib": ["esnext"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "jsx": "react",
-    "declaration": true,
-    "declarationMap": true,
     "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
+    "allowImportingTsExtensions": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "downlevelIteration": true,
+    "rootDir": ".",
+    "declaration": true,
     "importHelpers": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "lib": ["esnext"],
+    "target": "es2020",
     "skipLibCheck": true
   }
 }

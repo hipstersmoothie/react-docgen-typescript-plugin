@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { FC, PropsWithChildren } from 'react';
 
 interface DefaultPropValueComponentProps {
   /**
@@ -6,7 +6,7 @@ interface DefaultPropValueComponentProps {
    *
    * @default blue
    **/
-  color: "blue" | "green";
+  color: 'blue' | 'green';
 
   /**
    * Button counter.
@@ -24,14 +24,16 @@ interface DefaultPropValueComponentProps {
 /**
  * Component with a prop with a default value.
  */
-export const DefaultPropValueComponent: React.FC<DefaultPropValueComponentProps> = (
-  props
-) => (
+const DefaultPropValueComponentImpl: FC<PropsWithChildren<DefaultPropValueComponentProps>> = (props) => (
   <button disabled={props.disabled} style={{ backgroundColor: props.color }}>
     {props.counter}
     {props.children}
   </button>
 );
+
+export const DefaultPropValueComponent = DefaultPropValueComponentImpl as typeof DefaultPropValueComponentImpl & {
+  defaultProps: Partial<DefaultPropValueComponentProps>;
+};
 
 DefaultPropValueComponent.defaultProps = {
   counter: 123,

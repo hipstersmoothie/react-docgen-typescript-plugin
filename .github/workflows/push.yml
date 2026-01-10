@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]
 
     steps:
       - uses: actions/checkout@v1
@@ -22,12 +22,21 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install, build, and lint
-        run: |
-          yarn
-          yarn build
-          yarn lint
-          yarn test
+      - name: setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: install
+        run: pnpm install
+      - name: build
+        run: pnpm build
+      - name: lint
+        run: pnpm lint
+
+      - name: check
+        run: pnpm check
+      - name: format check
+        run: pnpm format:check
+      - name: test
+        run: pnpm test
 
   release:
     runs-on: ubuntu-latest
@@ -43,11 +52,15 @@ jobs:
         with:
           node-version: 20.x
 
+      - name: setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Create Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          yarn install --frozen-lockfile
-          yarn build
-          yarn release
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm check
+          pnpm release

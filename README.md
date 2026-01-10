@@ -20,14 +20,14 @@ yarn add -D react-docgen-typescript-plugin
 
 ```ts
 const ts = require('typescript');
-const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin").default;
+const ReactDocgenTypescriptPlugin = require('react-docgen-typescript-plugin').default;
 
 module.exports = {
   plugins: [
     // Will default to loading your root tsconfig.json
     new ReactDocgenTypescriptPlugin(),
     // or with a specific tsconfig
-    new ReactDocgenTypescriptPlugin({ tsconfigPath: "./tsconfig.dev.json" }),
+    new ReactDocgenTypescriptPlugin({ tsconfigPath: './tsconfig.dev.json' }),
     // or with compiler options
     new ReactDocgenTypescriptPlugin({ compilerOptions: { jsx: ts.JsxEmit.Preserve } }),
   ],
@@ -45,8 +45,8 @@ This plugins support all parser options from [react-docgen-typescript](https://g
 | docgenCollectionName | string or null | Specify the docgen collection name to use. All docgen information will be collected into this global object. Set to `null` to disable.              | `STORYBOOK_REACT_CLASSES` |
 | setDisplayName       | boolean        | Set the components' display name. If you want to set display names yourself or are using another plugin to do this, you should disable this option. | `true`                    |
 | typePropName         | string         | Specify the name of the property for docgen info prop type.                                                                                         | `type`                    |
-| exclude              | glob[]         | Glob patterns to ignore and not generate docgen information for. (Great for ignoring large icon libraries)                                          | `[]`                        |
-| include              | glob[]         | Glob patterns to generate docgen information for                                                                                                    | `['**/**.tsx']`             |
+| exclude              | glob[]         | Glob patterns to ignore and not generate docgen information for. (Great for ignoring large icon libraries)                                          | `[]`                      |
+| include              | glob[]         | Glob patterns to generate docgen information for                                                                                                    | `['**/**.tsx']`           |
 
 ## Debugging
 

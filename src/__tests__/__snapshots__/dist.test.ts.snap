@@ -1,0 +1,237 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`dist 1`] = `
+[
+  {
+    "__docgenInfo": {
+      "description": "",
+      "displayName": "DefaultPropValueComponent",
+      "props": [
+        {
+          "defaultValue": {
+            "value": "blue",
+          },
+          "description": "Button color.",
+          "name": "color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+        {
+          "defaultValue": {
+            "value": 123,
+          },
+          "description": "Button counter.",
+          "name": "counter",
+          "required": false,
+          "type": "number",
+        },
+        {
+          "defaultValue": {
+            "value": false,
+          },
+          "description": "Button disabled.",
+          "name": "disabled",
+          "required": false,
+          "type": "boolean",
+        },
+        {
+          "defaultValue": {
+            "value": -1,
+          },
+          "description": "",
+          "name": "tabIndex",
+          "required": false,
+          "type": "number",
+        },
+      ],
+    },
+    "displayName": "DefaultPropValueComponent",
+    "name": "DefaultPropValueComponent",
+  },
+  {
+    "__docgenInfo": {
+      "description": "Component with a prop with a default value.",
+      "displayName": "DirectDefaultExport",
+      "props": [
+        {
+          "defaultValue": {
+            "value": "blue",
+          },
+          "description": "Button color.",
+          "name": "color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+        {
+          "defaultValue": null,
+          "description": "Button counter.",
+          "name": "counter",
+          "required": true,
+          "type": "number",
+        },
+        {
+          "defaultValue": null,
+          "description": "Button disabled.",
+          "name": "disabled",
+          "required": true,
+          "type": "boolean",
+        },
+        {
+          "defaultValue": null,
+          "description": "",
+          "name": "tabIndex",
+          "required": true,
+          "type": "number",
+        },
+      ],
+    },
+    "displayName": "DirectDefaultExport",
+    "name": "DirectDefaultExport",
+  },
+  {
+    "__docgenInfo": {
+      "description": "Component with a prop with a default value.",
+      "displayName": "tests",
+      "props": [
+        {
+          "defaultValue": {
+            "value": "blue",
+          },
+          "description": "Button color.",
+          "name": "color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+        {
+          "defaultValue": null,
+          "description": "Button counter.",
+          "name": "counter",
+          "required": true,
+          "type": "number",
+        },
+        {
+          "defaultValue": null,
+          "description": "Button disabled.",
+          "name": "disabled",
+          "required": true,
+          "type": "boolean",
+        },
+        {
+          "defaultValue": null,
+          "description": "",
+          "name": "tabIndex",
+          "required": true,
+          "type": "number",
+        },
+      ],
+    },
+    "displayName": "DirectDefaultExportUnnamed",
+    "name": "DirectDefaultExportUnnamed",
+  },
+  {
+    "__docgenInfo": {
+      "description": "",
+      "displayName": "Button",
+      "props": [
+        {
+          "defaultValue": null,
+          "description": "",
+          "name": "text",
+          "required": true,
+          "type": "string",
+        },
+      ],
+    },
+    "displayName": "MyButtonDisplayName",
+    "name": "DisplayNameComponent",
+  },
+  {
+    "__docgenInfo": {
+      "description": "A component with a hyphenated prop name.",
+      "displayName": "HyphenatedPropNameComponent",
+      "props": [
+        {
+          "defaultValue": null,
+          "description": "Button color.",
+          "name": "button-color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+      ],
+    },
+    "displayName": "HyphenatedPropNameComponent",
+    "name": "HyphenatedPropNameComponent",
+  },
+  {
+    "__docgenInfo": {
+      "description": "This is a component with multiple props.",
+      "displayName": "MultiPropsComponent",
+      "props": [
+        {
+          "defaultValue": null,
+          "description": "Button color.",
+          "name": "color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+        {
+          "defaultValue": null,
+          "description": "Button size.",
+          "name": "size",
+          "required": true,
+          "type": ""small" | "large"",
+        },
+      ],
+    },
+    "displayName": "MultiPropsComponent",
+    "name": "MultiPropsComponent",
+  },
+  {
+    "__docgenInfo": {
+      "description": "A component with a multiline description.
+
+Second line.",
+      "displayName": "MultilineDescriptionComponent",
+      "props": [
+        {
+          "defaultValue": null,
+          "description": "Button color.",
+          "name": "color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+      ],
+    },
+    "displayName": "MultilineDescriptionComponent",
+    "name": "MultilineDescriptionComponent",
+  },
+  {
+    "__docgenInfo": {
+      "description": "A simple component.",
+      "displayName": "SimpleComponent",
+      "props": [
+        {
+          "defaultValue": null,
+          "description": "Button color.",
+          "name": "color",
+          "required": true,
+          "type": ""blue" | "green"",
+        },
+      ],
+    },
+    "displayName": "SimpleComponent",
+    "name": "SimpleComponent",
+  },
+  {
+    "__docgenInfo": {
+      "description": "A component with only text content wrapped in a div.
+
+Ref: https://github.com/strothj/react-docgen-typescript-loader/issues/7",
+      "displayName": "SimpleComponent",
+      "props": [],
+    },
+    "displayName": "SimpleComponent",
+    "name": "TextOnlyComponent",
+  },
+]
+`;
