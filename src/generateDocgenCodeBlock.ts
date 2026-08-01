@@ -1,6 +1,7 @@
-import path from "path";
+import path from "node:path";
+
 import ts from "typescript";
-import { ComponentDoc, PropItem } from "react-docgen-typescript";
+import type { ComponentDoc, PropItem } from "react-docgen-typescript";
 
 export interface GeneratorOptions {
   filename: string;
@@ -11,14 +12,51 @@ export interface GeneratorOptions {
   typePropName: string;
 }
 
+type DefaultValue = {
+  value: string | number | boolean;
+};
+
+type TypeValue = {
+  value: string;
+};
+
+function isDefaultValue(value: unknown): value is DefaultValue {
+  return (
+    value !== null &&
+    value !== undefined &&
+    typeof value === "object" &&
+    "value" in value &&
+    (typeof value.value === "string" ||
+      typeof value.value === "number" ||
+      typeof value.value === "boolean")
+  );
+}
+
+function isTypeValueArray(value: unknown): value is TypeValue[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (entry) =>
+        entry !== null &&
+        typeof entry === "object" &&
+        "value" in entry &&
+        typeof entry.value === "string"
+    )
+  );
+}
+
+function isStatement(statement: ts.Statement | null): statement is ts.Statement {
+  return statement !== null;
+}
+
 /**
  * Gets the identifier name for the component.
- * 
+ *
  * If the component has a displayName that differs from its
  * identifier, this will return the identifier.
  */
 function getComponentIdentifier(d: ComponentDoc): string {
-  return d.expression?.getName() || d.displayName
+  return d.expression?.getName() || d.displayName;
 }
 
 /**
@@ -56,7 +94,7 @@ function setDisplayName(d: ComponentDoc): ts.Statement | null {
   // If the expression name doesn't match the display name,
   // then we know the component has already set a displayName
   if (d.expression && d.expression.getName() !== d.displayName) {
-    return null
+    return null;
   }
 
   return insertTsIgnoreBeforeStatement(
@@ -94,16 +132,16 @@ function createPropDefinition(
   prop: PropItem,
   options: GeneratorOptions
 ) {
-   const createNumericDefaultValue = (value: number) => {
-       if (value < 0) {
-           return ts.factory.createPrefixUnaryExpression(
-               ts.SyntaxKind.MinusToken,
-               ts.factory.createNumericLiteral(-value),
-           );
-       }
+  const createNumericDefaultValue = (value: number) => {
+    if (value < 0) {
+      return ts.factory.createPrefixUnaryExpression(
+        ts.SyntaxKind.MinusToken,
+        ts.factory.createNumericLiteral(-value)
+      );
+    }
 
-       return ts.factory.createNumericLiteral(value);
-   };
+    return ts.factory.createNumericLiteral(value);
+  };
 
   /**
    * Set default prop value.
@@ -117,28 +155,16 @@ function createPropDefinition(
    *
    * @param defaultValue Default prop value or null if not set.
    */
-  const setDefaultValue = (
-    defaultValue: { value: string | number | boolean } | null
-  ) =>
+  const setDefaultValue = (defaultValue: unknown) =>
     ts.factory.createPropertyAssignment(
       ts.factory.createStringLiteral("defaultValue"),
-      // Use a more extensive check on defaultValue. Sometimes the parser
-      // returns an empty object.
-      defaultValue !== null &&
-        defaultValue !== undefined &&
-        typeof defaultValue === "object" &&
-        "value" in defaultValue &&
-        (typeof defaultValue.value === "string" ||
-          typeof defaultValue.value === "number" ||
-          typeof defaultValue.value === "boolean")
+      isDefaultValue(defaultValue)
         ? ts.factory.createObjectLiteralExpression([
             ts.factory.createPropertyAssignment(
               ts.factory.createIdentifier("value"),
-              // eslint-disable-next-line no-nested-ternary
               typeof defaultValue.value === "string"
                 ? ts.factory.createStringLiteral(defaultValue.value)
-                : // eslint-disable-next-line no-nested-ternary
-                typeof defaultValue.value === "number"
+                : typeof defaultValue.value === "number"
                 ? createNumericDefaultValue(defaultValue.value)
                 : defaultValue.value
                 ? ts.factory.createTrue()
@@ -193,15 +219,14 @@ function createPropDefinition(
    * ```
    * @param [typeValue] Prop value (for enums)
    */
-  const setValue = (typeValue?: any[]) =>
-    Array.isArray(typeValue) &&
-    typeValue.every((value) => typeof value.value === "string")
+  const setValue = (typeValue: unknown) =>
+    isTypeValueArray(typeValue)
       ? ts.factory.createPropertyAssignment(
           ts.factory.createStringLiteral("value"),
           ts.factory.createArrayLiteralExpression(
-            typeValue.map((value) =>
+            typeValue.map((typeValueItem) =>
               ts.factory.createObjectLiteralExpression([
-                setStringLiteralField("value", value.value),
+                setStringLiteralField("value", typeValueItem.value),
               ])
             )
           )
@@ -215,7 +240,7 @@ function createPropDefinition(
    * @param typeName Prop type name.
    * @param [typeValue] Prop value (for enums)
    */
-  const setType = (typeName: string, typeValue?: any[]) => {
+  const setType = (typeName: string, typeValue: unknown) => {
     const objectFields = [setStringLiteralField("name", typeName)];
     const valueField = setValue(typeValue);
 
@@ -398,7 +423,7 @@ export function generateDocgenCodeBlock(options: GeneratorOptions): string {
               options.docgenCollectionName,
               relativeFilename
             ),
-      ].filter((s) => s !== null) as ts.Statement[]
+      ].filter(isStatement)
     )
   );
 
@@ -406,13 +431,12 @@ export function generateDocgenCodeBlock(options: GeneratorOptions): string {
   const printNode = (sourceNode: ts.Node) =>
     printer.printNode(ts.EmitHint.Unspecified, sourceNode, sourceFile);
 
-  // Concat original source code with code from generated code blocks.
+  // Preserve the incoming module source exactly and only append generated docgen
+  // statements. Reprinting consumer source through the TypeScript printer has
+  // broken JSX text children before:
+  // https://github.com/strothj/react-docgen-typescript-loader/issues/7
   const result = codeBlocks.reduce(
     (acc, node) => `${acc}\n${printNode(node)}`,
-
-    // Use original source text rather than using printNode on the parsed form
-    // to prevent issue where literals are stripped within components.
-    // Ref: https://github.com/strothj/react-docgen-typescript-loader/issues/7
     options.source
   );
 

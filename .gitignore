@@ -5,3 +5,4 @@ example-dist
 coverage
 .env
 yarn-error.log
+test-output

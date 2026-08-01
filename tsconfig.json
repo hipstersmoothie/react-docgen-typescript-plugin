@@ -1,23 +1,30 @@
 {
-  "include": ["src/**/*", "typings/**/*"],
-
+  "include": [
+    "src/**/*",
+    "typings/**/*",
+    "vitest.config.mts"
+  ],
+  "exclude": [
+    "src/__tests__/__fixtures__"
+  ],
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "lib": ["esnext"],
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "lib": [
+      "esnext"
+    ],
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "jsx": "react",
-    "declaration": true,
-    "declarationMap": true,
     "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "downlevelIteration": true,
-    "importHelpers": true,
-    "skipLibCheck": true
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+      "node",
+      "vitest"
+    ]
   }
 }

@@ -1,6 +1,6 @@
 {
-  "projectName": "react-docgen-typescript-plugin",
-  "projectOwner": "hipstersmoothie",
+  "projectName": "react-docgen-typescript-plugin-delazyify",
+  "projectOwner": "TimBakerCircle",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -113,6 +113,19 @@
         "doc",
         "test",
         "code"
+      ]
+    },
+    {
+      "login": "TimBakerCircle",
+      "name": "Tim Baker",
+      "avatar_url": "https://avatars.githubusercontent.com/u/239700173?v=4",
+      "profile": "https://github.com/TimBakerCircle",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "maintenance",
+        "test"
       ]
     }
   ],

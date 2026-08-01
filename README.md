@@ -1,38 +1,40 @@
 <div align="center">
   <img  height="200"
     src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/512px-React-icon.svg.png">
-  <h1>react-docgen-typescript-plugin</h1>
+  <h1>react-docgen-typescript-plugin-delazyify</h1>
   <p>A webpack plugin to inject react typescript docgen information</p>
 </div>
 
 ## Install
 
 ```sh
-npm install --save-dev react-docgen-typescript-plugin
+npm install --save-dev react-docgen-typescript-plugin-delazyify
 # or
-yarn add -D react-docgen-typescript-plugin
+yarn add -D react-docgen-typescript-plugin-delazyify
 ```
 
 ## Usage
 
-> NOTE: The TypeScript compiler options `allowSyntheticDefaultImports` and `esModuleInterop` will make
-> `react-docgen-typescript-plugin` a lot harder! Turn them off for faster build times.
-
 ```ts
-const ts = require('typescript');
-const ReactDocgenTypescriptPlugin = require("react-docgen-typescript-plugin").default;
+const ts = require("typescript");
+const { ReactDocgenTypeScriptPlugin } = require("react-docgen-typescript-plugin-delazyify");
 
 module.exports = {
   plugins: [
     // Will default to loading your root tsconfig.json
-    new ReactDocgenTypescriptPlugin(),
+    new ReactDocgenTypeScriptPlugin(),
     // or with a specific tsconfig
-    new ReactDocgenTypescriptPlugin({ tsconfigPath: "./tsconfig.dev.json" }),
+    new ReactDocgenTypeScriptPlugin({ tsconfigPath: "./tsconfig.dev.json" }),
     // or with compiler options
-    new ReactDocgenTypescriptPlugin({ compilerOptions: { jsx: ts.JsxEmit.Preserve } }),
+    new ReactDocgenTypeScriptPlugin({ compilerOptions: { jsx: ts.JsxEmit.Preserve } }),
   ],
 };
 ```
+
+This package targets webpack 5 and modern Node runtimes. Webpack and TypeScript
+are peer dependencies supplied by the consuming project. The plugin uses your
+project `tsconfig.json` by default, including modern options such as
+`allowSyntheticDefaultImports` and `esModuleInterop`.
 
 ### Options
 
@@ -47,22 +49,6 @@ This plugins support all parser options from [react-docgen-typescript](https://g
 | typePropName         | string         | Specify the name of the property for docgen info prop type.                                                                                         | `type`                    |
 | exclude              | glob[]         | Glob patterns to ignore and not generate docgen information for. (Great for ignoring large icon libraries)                                          | `[]`                        |
 | include              | glob[]         | Glob patterns to generate docgen information for                                                                                                    | `['**/**.tsx']`             |
-
-## Debugging
-
-If you want to see how this plugins is including and excluding modules set the `DEBUG` environment variable.
-
-- `DEBUG=docgen:*` - All logs
-- `DEBUG=docgen:include` - Included modules
-- `DEBUG=docgen:exclude` - Excluded modules
-- `DEBUG=docgen:docs` - Generated docs
-
-```bash
-DEBUG=docgen:* npm run storybook
-```
-
-> Another great way of debugging your generated docs is to use a `debugger` statement in your component source file.
-> If you turn off source maps you will be able to see the code that this package generates.
 
 ## Prior Art
 
@@ -90,6 +76,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/meriouma"><img src="https://avatars.githubusercontent.com/u/1082552?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Maxime Meriouma-Caron</b></sub></a><br /><a href="#infra-meriouma" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=meriouma" title="Tests">⚠️</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=meriouma" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/askoufis"><img src="https://avatars.githubusercontent.com/u/5663042?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adam Skoufis</b></sub></a><br /><a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=askoufis" title="Code">💻</a></td>
     <td align="center"><a href="https://sorenstudios.com/"><img src="https://avatars.githubusercontent.com/u/295939?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nicholas Narsing</b></sub></a><br /><a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=soren121" title="Documentation">📖</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=soren121" title="Tests">⚠️</a> <a href="https://github.com/hipstersmoothie/react-docgen-typescript-plugin/commits?author=soren121" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/TimBakerCircle"><img src="https://avatars.githubusercontent.com/u/239700173?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tim Baker</b></sub></a><br /><a href="https://github.com/TimBakerCircle/react-docgen-typescript-plugin-delazyify/commits?author=TimBakerCircle" title="Code">💻</a> <a href="https://github.com/TimBakerCircle/react-docgen-typescript-plugin-delazyify/commits?author=TimBakerCircle" title="Documentation">📖</a> <a href="#infra-TimBakerCircle" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-TimBakerCircle" title="Maintenance">🚧</a> <a href="https://github.com/TimBakerCircle/react-docgen-typescript-plugin-delazyify/commits?author=TimBakerCircle" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

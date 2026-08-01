@@ -1,42 +1,93 @@
-import path from "path";
-import createDebug from "debug";
+import path from "node:path";
+
 import ts from "typescript";
-import * as docGen from "react-docgen-typescript";
-import { matcher } from "micromatch";
-import * as webpack from "webpack";
-import findCacheDir from "find-cache-dir";
-import flatCache from "flat-cache";
-import crypto from "crypto";
+import type * as docGen from "react-docgen-typescript";
+import type * as webpack from "webpack";
 
-import { LoaderOptions } from "./types";
-import {
-  generateDocgenCodeBlock,
+import type { GeneratorOptions } from "./generateDocgenCodeBlock";
+import { clearDocgenLoaderCache, registerDocgenLoaderOptions } from "./loader";
+import type { LoaderOptions, PluginOptions } from "./types";
+
+type GenerateOptions = Pick<
   GeneratorOptions,
-} from "./generateDocgenCodeBlock";
+  "docgenCollectionName" | "setDisplayName" | "typePropName"
+>;
 
-const debugExclude = createDebug("docgen:exclude");
-const debugInclude = createDebug("docgen:include");
+type ResolvedOptions = {
+  docgenOptions: docGen.ParserOptions;
+  generateOptions: GenerateOptions;
+  compilerOptions: ts.CompilerOptions;
+  fileNames: string[];
+};
 
-interface TypescriptOptions {
-  /**
-   * Specify the location of the tsconfig.json to use. Can not be used with
-   * compilerOptions.
-   **/
-  tsconfigPath?: string;
-  /** Specify TypeScript compiler options. Can not be used with tsconfigPath. */
-  compilerOptions?: ts.CompilerOptions;
+type NormalModuleResolveData = {
+  request?: string;
+  resource?: string;
+  createData: {
+    resource?: string;
+    loaders?: Array<{ loader: string; options?: unknown }>;
+  };
+};
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[|\\{}()[\]^$+?.]/g, "\\$&");
 }
 
-export type PluginOptions = docGen.ParserOptions &
-  LoaderOptions &
-  TypescriptOptions & {
-    /** Glob patterns to ignore */
-    exclude?: string[];
-    /** Glob patterns to include. defaults to ts|tsx */
-    include?: string[];
-  };
+function expandSimpleBraces(glob: string): string[] {
+  const match = /\{([^{}]+)\}/.exec(glob);
 
-/** Get the contents of the tsconfig in the system */
+  if (!match) {
+    return [glob];
+  }
+
+  const expression = match[0];
+  const body = match[1] || "";
+  const before = glob.slice(0, match.index);
+  const after = glob.slice(match.index + expression.length);
+
+  return body
+    .split(",")
+    .flatMap((part) => expandSimpleBraces(`${before}${part}${after}`));
+}
+
+function globToRegExp(glob: string): RegExp {
+  const normalizedGlob = glob.replace(/\\/g, "/");
+  let pattern = "^";
+
+  for (let index = 0; index < normalizedGlob.length; index += 1) {
+    const character = normalizedGlob.charAt(index);
+    const nextCharacter = normalizedGlob.charAt(index + 1);
+
+    if (character === "*") {
+      if (nextCharacter === "*") {
+        const afterGlobstar = normalizedGlob[index + 2];
+
+        if (afterGlobstar === "/") {
+          pattern += "(?:.*\\/)?";
+          index += 2;
+        } else {
+          pattern += ".*";
+          index += 1;
+        }
+      } else {
+        pattern += "[^/]*";
+      }
+
+      continue;
+    }
+
+    if (character === "?") {
+      pattern += "[^/]";
+      continue;
+    }
+
+    pattern += escapeRegExp(character);
+  }
+
+  return new RegExp(`${pattern}$`);
+}
+
+/** Get the contents of the tsconfig in the system. */
 function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
   try {
     const basePath = path.dirname(tsconfigPath);
@@ -49,346 +100,118 @@ function getTSConfigFile(tsconfigPath: string): ts.ParsedCommandLine {
       {},
       tsconfigPath
     );
-  } catch (error) {
-    return {} as ts.ParsedCommandLine;
+  } catch {
+    return {
+      options: {},
+      fileNames: [],
+      errors: [],
+    };
   }
 }
 
 /** Create a glob matching function. */
 const matchGlob = (globs?: string[]) => {
-  const matchers = (globs || []).map((g) => matcher(g, { dot: true }));
+  const matchers = (globs || [])
+    .flatMap(expandSimpleBraces)
+    .map(globToRegExp);
 
-  return (filename: string) =>
-    Boolean(filename && matchers.find((match) => match(filename)));
+  return (filename: string) => {
+    const normalizedFilename = filename.replace(/\\/g, "/");
+
+    return Boolean(
+      normalizedFilename &&
+        matchers.find((matches) => matches.test(normalizedFilename))
+    );
+  };
 };
 
-// The cache is used only with webpack 4 for now as webpack 5 comes with caching of its own
-const cacheId = "ts-docgen";
-const cacheDir = findCacheDir({ name: cacheId });
-const cache = flatCache.load(cacheId, cacheDir);
-
-/** Run the docgen parser and inject the result into the output */
-/** This is used for webpack 4 or earlier */
-function processModule(
-  parser: docGen.FileParser,
-  webpackModule: webpack.Module,
-  tsProgram: ts.Program,
-  loaderOptions: Required<LoaderOptions>
-) {
-  if (!webpackModule) {
-    return;
-  }
-
-  const hash = crypto
-    .createHash("sha1")
-    // eslint-disable-next-line
-    // @ts-ignore
-    // eslint-disable-next-line
-    .update(webpackModule._source._value)
-    .digest("hex");
-  const cached = cache.getKey(hash);
-
-  if (cached) {
-    // eslint-disable-next-line
-    // @ts-ignore
-    debugInclude(`Got cached docgen for "${webpackModule.request}"`);
-    // eslint-disable-next-line
-    // @ts-ignore
-    // eslint-disable-next-line
-    webpackModule._source._value = cached;
-    return;
-  }
-
-  // eslint-disable-next-line
-  // @ts-ignore: Webpack 4 type
-  const { userRequest } = webpackModule;
-
-  const componentDocs = parser.parseWithProgramProvider(
-    userRequest,
-    () => tsProgram
-  );
-
-  if (!componentDocs.length) {
-    return;
-  }
-
-  const docs = generateDocgenCodeBlock({
-    filename: userRequest,
-    source: userRequest,
-    componentDocs,
-    ...loaderOptions,
-  }).substring(userRequest.length);
-
-  // eslint-disable-next-line
-  // @ts-ignore: Webpack 4 type
-  // eslint-disable-next-line
-  let sourceWithDocs = webpackModule._source._value;
-
-  sourceWithDocs += `\n${docs}\n`;
-
-  // eslint-disable-next-line
-  // @ts-ignore: Webpack 4 type
-  // eslint-disable-next-line
-  webpackModule._source._value = sourceWithDocs;
-}
-
-/** Inject typescript docgen information into modules at the end of a build */
+/** Inject TypeScript docgen information into TSX modules. */
 export default class DocgenPlugin implements webpack.WebpackPluginInstance {
-  public static defaultOptions = {
+  public static defaultOptions: Required<LoaderOptions> = {
     setDisplayName: true,
     typePropName: "type",
     docgenCollectionName: "STORYBOOK_REACT_CLASSES",
   };
 
-  private name = "React Docgen Typescript Plugin";
-  private options: PluginOptions;
+  private readonly name = "React Docgen Typescript Plugin";
+  private readonly options: PluginOptions;
 
   constructor(options: PluginOptions = {}) {
     this.options = options;
   }
 
   apply(compiler: webpack.Compiler): void {
-    // Property compiler.version is set only starting from webpack 5
     const webpackVersion = compiler.webpack?.version || "";
-    const isWebpack5 = parseInt(webpackVersion.split(".")[0], 10) >= 5;
+    const isWebpack5 =
+      Number.parseInt(webpackVersion.split(".")[0] || "0", 10) >= 5;
 
-    if (isWebpack5) {
-      this.applyWebpack5(compiler);
-    } else {
-      this.applyWebpack4(compiler);
+    if (!isWebpack5) {
+      throw new Error(
+        "react-docgen-typescript-plugin v2 requires webpack 5 or newer."
+      );
     }
-  }
 
-  applyWebpack5(compiler: webpack.Compiler): void {
-    const pluginName = "DocGenPlugin";
-    const {
-      docgenOptions,
-      compilerOptions,
-      generateOptions,
-    } = this.getOptions();
-    const docGenParser = docGen.withCompilerOptions(
-      compilerOptions,
-      docgenOptions
-    );
     const { exclude = [], include = ["**/**.tsx"] } = this.options;
     const isExcluded = matchGlob(exclude);
     const isIncluded = matchGlob(include);
+    const resolvedOptions = this.getOptions();
+    const configId = registerDocgenLoaderOptions(resolvedOptions);
+    const loaderLocation = path.resolve(__dirname, "../dist/loader.js");
 
     compiler.hooks.compilation.tap(
-      pluginName,
-      (compilation: webpack.Compilation) => {
-        // Since this file is needed only for webpack 5, load it only then
-        // to simplify the implementation of the file.
-        //
-        // eslint-disable-next-line
-        const { DocGenDependency } = require("./dependency");
+      this.name,
+      (_compilation, { normalModuleFactory }) => {
+        clearDocgenLoaderCache(configId);
 
-        compilation.dependencyTemplates.set(
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          DocGenDependency,
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          new DocGenDependency.Template()
+        normalModuleFactory.hooks.afterResolve.tap(
+          this.name,
+          (resolveData: NormalModuleResolveData) => {
+            const resource =
+              resolveData.createData.resource ||
+              resolveData.resource ||
+              resolveData.request ||
+              "";
+
+            if (!resource) {
+              return;
+            }
+
+            if (isExcluded(resource)) {
+              return;
+            }
+
+            if (!isIncluded(resource)) {
+              return;
+            }
+
+            resolveData.createData.loaders =
+              resolveData.createData.loaders || [];
+            resolveData.createData.loaders.push({
+              loader: loaderLocation,
+              options: { configId },
+            });
+          }
         );
-
-        compilation.hooks.seal.tap(pluginName, () => {
-          const modulesToProcess: [string, webpack.Module][] = [];
-
-          // 1. Aggregate modules to process
-          compilation.modules.forEach((module: webpack.Module) => {
-            if (!module.nameForCondition) {
-              return;
-            }
-
-            const nameForCondition = module.nameForCondition() || "";
-
-            // Ignore modules that haven't been built yet for webpack 5
-            if (!compilation.builtModules.has(module)) {
-              debugExclude(`Ignoring un-built module: ${nameForCondition}`);
-              return;
-            }
-
-            // Ignore external modules
-            // eslint-disable-next-line
-            // @ts-ignore: Webpack 4 type
-            if (module.external) {
-              debugExclude(`Ignoring external module: ${nameForCondition}`);
-              return;
-            }
-
-            // Ignore raw requests
-            // eslint-disable-next-line
-            // @ts-ignore: Webpack 4 type
-            if (!module.rawRequest) {
-              debugExclude(
-                `Ignoring module without "rawRequest": ${nameForCondition}`
-              );
-              return;
-            }
-
-            if (isExcluded(nameForCondition)) {
-              debugExclude(
-                `Module not matched in "exclude": ${nameForCondition}`
-              );
-              return;
-            }
-
-            if (!isIncluded(nameForCondition)) {
-              debugExclude(
-                `Module not matched in "include": ${nameForCondition}`
-              );
-              return;
-            }
-
-            modulesToProcess.push([nameForCondition, module]);
-          });
-
-          // 2. Create a ts program with the modules
-          const tsProgram = ts.createProgram(
-            modulesToProcess.map(([name]) => name),
-            compilerOptions
-          );
-
-          // 3. Process and parse each module and add the type information
-          // as a dependency
-          modulesToProcess.forEach(([name, module]) => {
-            // Since this file is needed only for webpack 5, load it only then
-            // to simplify the implementation of the file.
-            //
-            // eslint-disable-next-line
-            const { DocGenDependency } = require("./dependency");
-
-            module.addDependency(
-              // eslint-disable-next-line
-              // @ts-ignore: Webpack 4 type
-              new DocGenDependency(
-                generateDocgenCodeBlock({
-                  filename: name,
-                  source: name,
-                  componentDocs: docGenParser.parseWithProgramProvider(
-                    name,
-                    () => tsProgram
-                  ),
-                  ...generateOptions,
-                }).substring(name.length)
-              )
-            );
-          });
-        });
       }
     );
   }
 
-  applyWebpack4(compiler: webpack.Compiler): void {
-    const { docgenOptions, compilerOptions } = this.getOptions();
-    const parser = docGen.withCompilerOptions(compilerOptions, docgenOptions);
-    const { exclude = [], include = ["**/**.tsx"] } = this.options;
-    const isExcluded = matchGlob(exclude);
-    const isIncluded = matchGlob(include);
-
-    compiler.hooks.make.tap(this.name, (compilation) => {
-      compilation.hooks.seal.tap(this.name, () => {
-        const modulesToProcess: webpack.Module[] = [];
-
-        compilation.modules.forEach((module: webpack.Module) => {
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          if (!module.built) {
-            // eslint-disable-next-line
-            // @ts-ignore: Webpack 4 type
-            debugExclude(`Ignoring un-built module: ${module.userRequest}`);
-            return;
-          }
-
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          if (module.external) {
-            // eslint-disable-next-line
-            // @ts-ignore: Webpack 4 type
-            debugExclude(`Ignoring external module: ${module.userRequest}`);
-            return;
-          }
-
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          if (!module.rawRequest) {
-            debugExclude(
-              // eslint-disable-next-line
-              // @ts-ignore: Webpack 4 type
-              `Ignoring module without "rawRequest": ${module.userRequest}`
-            );
-            return;
-          }
-
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          if (isExcluded(module.userRequest)) {
-            debugExclude(
-              // eslint-disable-next-line
-              // @ts-ignore: Webpack 4 type
-              `Module not matched in "exclude": ${module.userRequest}`
-            );
-            return;
-          }
-
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          if (!isIncluded(module.userRequest)) {
-            debugExclude(
-              // eslint-disable-next-line
-              // @ts-ignore: Webpack 4 type
-              `Module not matched in "include": ${module.userRequest}`
-            );
-            return;
-          }
-
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          debugInclude(module.userRequest);
-          modulesToProcess.push(module);
-        });
-
-        const tsProgram = ts.createProgram(
-          // eslint-disable-next-line
-          // @ts-ignore: Webpack 4 type
-          modulesToProcess.map((v) => v.userRequest),
-          compilerOptions
-        );
-
-        modulesToProcess.forEach((m) =>
-          processModule(parser, m, tsProgram, {
-            docgenCollectionName: "STORYBOOK_REACT_CLASSES",
-            setDisplayName: true,
-            typePropName: "type",
-          })
-        );
-
-        cache.save();
-      });
-    });
-  }
-
-  getOptions(): {
-    docgenOptions: docGen.ParserOptions;
-    generateOptions: {
-      docgenCollectionName: GeneratorOptions["docgenCollectionName"];
-      setDisplayName: GeneratorOptions["setDisplayName"];
-      typePropName: GeneratorOptions["typePropName"];
-    };
-    compilerOptions: ts.CompilerOptions;
-  } {
+  getOptions(): ResolvedOptions {
     const {
       tsconfigPath = "./tsconfig.json",
       compilerOptions: userCompilerOptions,
       docgenCollectionName,
       setDisplayName,
       typePropName,
-      ...docgenOptions
+      exclude: _exclude,
+      include: _include,
+      parserOptions,
+      ...topLevelDocgenOptions
     } = this.options;
     const { defaultOptions } = DocgenPlugin;
 
-    let compilerOptions = {
+    let fileNames: string[] = [];
+    let compilerOptions: ts.CompilerOptions = {
       jsx: ts.JsxEmit.React,
       module: ts.ModuleKind.CommonJS,
       target: ts.ScriptTarget.Latest,
@@ -400,14 +223,18 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
         ...userCompilerOptions,
       };
     } else {
-      const { options: tsOptions } = getTSConfigFile(tsconfigPath);
+      const { fileNames: tsFileNames, options: tsOptions } =
+        getTSConfigFile(tsconfigPath);
+
+      fileNames = tsFileNames;
       compilerOptions = { ...compilerOptions, ...tsOptions };
     }
 
     return {
       docgenOptions: {
         shouldIncludeExpression: true,
-        ...docgenOptions,
+        ...topLevelDocgenOptions,
+        ...parserOptions,
       },
       generateOptions: {
         docgenCollectionName:
@@ -418,8 +245,10 @@ export default class DocgenPlugin implements webpack.WebpackPluginInstance {
         typePropName: typePropName ?? defaultOptions.typePropName,
       },
       compilerOptions,
+      fileNames,
     };
   }
 }
 
 export type DocgenPluginType = typeof DocgenPlugin;
+export type { PluginOptions } from "./types";

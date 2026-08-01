@@ -1,93 +1,142 @@
-import webpack, { Configuration } from "webpack";
-import { createFsFromVolume, IFs, Volume } from "memfs";
-import ReactDocgenTypeScriptPlugin from "..";
-import { LoaderOptions } from "../types";
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 
-// eslint-disable-next-line
-const joinPath = require("memory-fs/lib/join");
+import { beforeAll, describe, expect, it } from "vitest";
+import ts from "typescript";
+import webpack, { type Configuration } from "webpack";
 
-// Hack for webpack 4. This isn't needed with 5
-// See more: https://github.com/streamich/memfs/issues/404.
-function ensureWebpackMemoryFs(fs: IFs) {
-  // Return it back, when it has Webpack 'join' method
-  // eslint-disable-next-line
-  // @ts-ignore
-  if (fs.join) {
-    return fs;
-  }
+import SourcePlugin from "../plugin";
+import type { LoaderOptions } from "../types";
 
-  // Create FS proxy, adding `join` method to memfs, but not modifying original object
-  const nextFs = Object.create(fs);
-  nextFs.join = joinPath;
-
-  return nextFs;
-}
+const projectRoot = path.resolve(__dirname, "../..");
+const outputPath = path.join(projectRoot, "test-output");
+const outputFile = path.join(outputPath, "main.js");
 
 function compile(config: Configuration): Promise<string> {
   return new Promise((resolve, reject) => {
     const compiler = webpack(config);
 
-    // eslint-disable-next-line
-    // @ts-ignore: There's a type mismatch but this should work based on webpack source
-    compiler.outputFileSystem = ensureWebpackMemoryFs(
-      createFsFromVolume(new Volume())
-    );
-    const memfs = compiler.outputFileSystem;
-
-    if (!memfs) {
-      throw new Error("memfs is undefined");
-    }
-
     compiler.run((error, stats) => {
-      if (error) {
-        return reject(error);
-      }
+      compiler.close((closeError) => {
+        if (error) {
+          reject(error);
+          return;
+        }
 
-      if (stats?.hasErrors()) {
-        return reject(stats.toString("errors-only"));
-      }
+        if (closeError) {
+          reject(closeError);
+          return;
+        }
 
-      memfs.readFile(
-        "./dist/main.js",
-        {
-          encoding: "utf-8",
-        },
-        // eslint-disable-next-line
-        // @ts-ignore: Type mismatch again
-        (err, data) => (err ? reject(err) : resolve(data))
-      );
+        if (stats?.hasErrors()) {
+          reject(new Error(stats.toString("errors-only")));
+          return;
+        }
 
-      return undefined;
+        resolve(fs.readFileSync(outputFile, "utf8"));
+      });
     });
   });
 }
 
-const getConfig = (
-  options = {},
-  config: { title?: string } = {}
-): Configuration => ({
-  mode: "none",
-  entry: { main: "./src/__tests__/__fixtures__/Simple.tsx" },
-  plugins: [new ReactDocgenTypeScriptPlugin(options)],
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        loader: "ts-loader",
-        options: {
-          transpileOnly: true,
+function getConfig(plugin: unknown): Configuration {
+  return {
+    context: projectRoot,
+    mode: "none",
+    entry: { main: "./src/__tests__/__fixtures__/Simple.tsx" },
+    output: {
+      path: outputPath,
+      filename: "main.js",
+    },
+    optimization: {
+      minimize: false,
+    },
+    plugins: [plugin as NonNullable<Configuration["plugins"]>[number]],
+    resolve: {
+      extensions: [".tsx", ".ts", ".js"],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          loader: require.resolve("ts-loader"),
+          options: {
+            transpileOnly: true,
+            compilerOptions: {
+              declaration: false,
+              declarationMap: false,
+              noEmit: false,
+            },
+          },
         },
-      },
-    ],
-  },
-  ...config,
-});
+      ],
+    },
+  };
+}
 
-// TODO: What else to test and how?
-test("default options", async () => {
-  const result = await compile(getConfig({}));
+describe("webpack plugin compatibility", () => {
+  beforeAll(() => {
+    execFileSync("npm", ["run", "build"], {
+      cwd: projectRoot,
+      stdio: "inherit",
+    });
+  });
 
-  expect(result).toContain("STORYBOOK_REACT_CLASSES");
+  it("supports CommonJS named construction and injects legacy docgen output", async () => {
+    const { ReactDocgenTypeScriptPlugin } = require("../../dist");
+    const result = await compile(getConfig(new ReactDocgenTypeScriptPlugin()));
+
+    expect(ReactDocgenTypeScriptPlugin).toBeTypeOf("function");
+    expect(result).toContain("SimpleComponent.__docgenInfo");
+    expect(result).toContain("STORYBOOK_REACT_CLASSES");
+    expect(result).toContain("Simple.tsx#SimpleComponent");
+  }, 20_000);
+
+  it("respects include globs without micromatch", async () => {
+    const { ReactDocgenTypeScriptPlugin } = require("../../dist");
+    const result = await compile(
+      getConfig(
+        new ReactDocgenTypeScriptPlugin({
+          include: ["**/*.{ts,tsx}"],
+        })
+      )
+    );
+
+    expect(result).toContain("SimpleComponent.__docgenInfo");
+  }, 20_000);
+
+  it("respects exclude globs without micromatch", async () => {
+    const { ReactDocgenTypeScriptPlugin } = require("../../dist");
+    const result = await compile(
+      getConfig(
+        new ReactDocgenTypeScriptPlugin({
+          exclude: ["**/*.tsx"],
+        })
+      )
+    );
+
+    expect(result).not.toContain("SimpleComponent.__docgenInfo");
+  }, 20_000);
+
+  it("supports modern TypeScript interop compiler options", async () => {
+    const { ReactDocgenTypeScriptPlugin } = require("../../dist");
+    const result = await compile(
+      getConfig(
+        new ReactDocgenTypeScriptPlugin({
+          compilerOptions: {
+            allowSyntheticDefaultImports: true,
+            esModuleInterop: true,
+            jsx: ts.JsxEmit.React,
+            module: ts.ModuleKind.CommonJS,
+            target: ts.ScriptTarget.Latest,
+          },
+        })
+      )
+    );
+
+    expect(result).toContain("SimpleComponent.__docgenInfo");
+  }, 20_000);
 });
 
 describe("custom options", () => {
@@ -100,14 +149,14 @@ describe("custom options", () => {
       typePropName: ["customValue", undefined],
       docgenCollectionName: ["customValue", null, undefined],
     };
-    const { defaultOptions } = ReactDocgenTypeScriptPlugin;
+    const { defaultOptions } = SourcePlugin;
 
     (Object.keys(options) as Array<keyof LoaderOptions>).forEach(
       (optionName) => {
         const values = options[optionName];
 
-        test.each(values)(`${optionName}: %p`, (value) => {
-          const plugin = new ReactDocgenTypeScriptPlugin({
+        it.each(values)(`${optionName}: %p`, (value) => {
+          const plugin = new SourcePlugin({
             [optionName]: value,
           });
           const { generateOptions: resultOptions } = plugin.getOptions();
@@ -117,6 +166,16 @@ describe("custom options", () => {
           );
         });
       }
+    );
+  });
+
+  it("preserves parsed tsconfig files for project-level docgen programs", () => {
+    const plugin = new SourcePlugin({
+      tsconfigPath: path.join(projectRoot, "tsconfig.json"),
+    });
+
+    expect(plugin.getOptions().fileNames).toContain(
+      path.join(projectRoot, "src/plugin.ts")
     );
   });
 });

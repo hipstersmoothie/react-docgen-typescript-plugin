@@ -1,14 +1,20 @@
-import fs from "fs";
-import path from "path";
-import { parse, ParserOptions } from "react-docgen-typescript/lib/parser.js";
+import fs from "node:fs";
+import path from "node:path";
+
+import { parse } from "react-docgen-typescript/lib/parser.js";
+import type { ParserOptions } from "react-docgen-typescript/lib/parser.js";
+import { describe, expect, it } from "vitest";
+
 import {
   generateDocgenCodeBlock,
-  GeneratorOptions,
+  type GeneratorOptions,
 } from "../generateDocgenCodeBlock";
 
 const defaultParserOptions = { shouldIncludeExpression: true };
 
-function getGeneratorOptions(parserOptions: ParserOptions) {
+function getGeneratorOptions(
+  parserOptions: ParserOptions
+): (filename: string) => GeneratorOptions {
   return (filename: string) => {
     const filePath = path.resolve(__dirname, "__fixtures__", filename);
 
@@ -19,7 +25,7 @@ function getGeneratorOptions(parserOptions: ParserOptions) {
       docgenCollectionName: null,
       setDisplayName: true,
       typePropName: "type",
-    } as GeneratorOptions;
+    };
   };
 }
 
@@ -30,8 +36,13 @@ function loadFixtureTests(): GeneratorOptions[] {
 }
 
 const fixtureTests: GeneratorOptions[] = loadFixtureTests();
-const simpleFixture = fixtureTests.find((f) => f.filename === "Simple.tsx")!
-const displayNameFixture = fixtureTests.find((f) => f.filename === "DisplayName.tsx")!
+const simpleFixture = fixtureTests.find((f) => f.filename === "Simple.tsx")!;
+const displayNameFixture = fixtureTests.find(
+  (f) => f.filename === "DisplayName.tsx"
+)!;
+const textOnlyFixture = fixtureTests.find(
+  (f) => f.filename === "TextOnlyComponent.tsx"
+)!;
 
 describe("component fixture", () => {
   fixtureTests.forEach((generatorOptions) => {
@@ -68,4 +79,11 @@ it("generates value info for enums", () => {
       })("DefaultPropValue.tsx")
     )
   ).toMatchSnapshot();
+});
+
+it("preserves text-only JSX source while appending docgen output", () => {
+  const output = generateDocgenCodeBlock(textOnlyFixture);
+
+  expect(output).toContain("<div>Test only component</div>");
+  expect(output).toContain("SimpleComponent.__docgenInfo");
 });

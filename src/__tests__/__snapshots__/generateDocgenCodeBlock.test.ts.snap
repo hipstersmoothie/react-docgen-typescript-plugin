@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`adds component to docgen collection 1`] = `
 "import * as React from "react";
@@ -52,7 +52,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture DefaultPropValue.tsx has code block generated 1`] = `
+exports[`component fixture > DefaultPropValue.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface DefaultPropValueComponentProps {
@@ -103,7 +103,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture DisplayName.tsx has code block generated 1`] = `
+exports[`component fixture > DisplayName.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface ButtonComponentProps {
@@ -123,7 +123,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture HyphenatedPropName.tsx has code block generated 1`] = `
+exports[`component fixture > HyphenatedPropName.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface HyphenatedPropNameProps {
@@ -151,7 +151,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture MultiProps.tsx has code block generated 1`] = `
+exports[`component fixture > MultiProps.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface MultiPropsComponentProps {
@@ -178,7 +178,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture MultilineDescription.tsx has code block generated 1`] = `
+exports[`component fixture > MultilineDescription.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface MultilineDescriptionProps {
@@ -204,7 +204,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture MultilinePropDescription.tsx has code block generated 1`] = `
+exports[`component fixture > MultilinePropDescription.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface MultilinePropDescriptionComponentProps {
@@ -232,7 +232,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture Simple.tsx has code block generated 1`] = `
+exports[`component fixture > Simple.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 interface SimpleComponentProps {
@@ -256,7 +256,7 @@ try {
 catch (__react_docgen_typescript_loader_error) { }"
 `;
 
-exports[`component fixture TextOnlyComponent.tsx has code block generated 1`] = `
+exports[`component fixture > TextOnlyComponent.tsx has code block generated 1`] = `
 "import * as React from "react";
 
 /**

@@ -1,3 +1,6 @@
+import type ts from "typescript";
+import type { ParserOptions } from "react-docgen-typescript";
+
 export interface Module {
   userRequest: string;
   request: string;
@@ -43,3 +46,30 @@ export interface LoaderOptions {
    */
   typePropName?: string;
 }
+
+export interface TypescriptOptions {
+  /**
+   * Specify the location of the tsconfig.json to use. Can not be used with
+   * compilerOptions.
+   */
+  tsconfigPath?: string;
+
+  /** Specify TypeScript compiler options. Can not be used with tsconfigPath. */
+  compilerOptions?: ts.CompilerOptions;
+}
+
+export interface GlobOptions {
+  /** Glob patterns to ignore. */
+  exclude?: string[];
+
+  /** Glob patterns to include. Defaults to TSX files. */
+  include?: string[];
+}
+
+export type PluginOptions = ParserOptions &
+  LoaderOptions &
+  TypescriptOptions &
+  GlobOptions & {
+    /** Optional explicit parser options. Top-level parser options remain supported. */
+    parserOptions?: ParserOptions;
+  };
